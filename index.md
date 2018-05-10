@@ -6,41 +6,39 @@ collection: main
 
 ## Instructors
 
-- David A. C. Beck
 - Joseph L. Hellerstein
-- TA: Dimitrios Gklezakos
 
 
 ## Logistics
 
-- Days: Tuesdays
-- Time: 5pm - 8:50pm
-- Place: [Denny 303](http://www.washington.edu/maps/#!/DEN)
+- Days: W-F
+- Time: 1:30-2:50
+- Place: TBD
 
 
 ## Course Description
+
+This research seminar is intended for graduate students in Computer Science, Electrical Engineering, and related fields 
+who are interested in research that will advance quality and credibility of models used in biomedical research.
+The seminar is part of developing a research agenda for the NIH Reproducibility Center recently funded in UW BioEngineering.
+The is coordinated with BioEngineering 599, a topics class in modeling biomedical systems.
+
+Rapid progress in high throughput techniques in molecular biology is vastly improving the quality, quantity, and kind of data available. Historically, these data related mostly to genomes, such as sequence data, gene annotations, and mutation calling. More recently, data are available on biochemical reactions such as between proteins, DNA, RNA, and other biological molecules.
+
+The availability of reaction data allows researchers to go beyond the structure of genomes to model the kinetics of operation of cells. 
+Such models can provide a basis for diagnostics of complex diseases, engineering biological systems, and environment remediation. Progress to date includes a complete model of a human pathogen, and over 1,000 models of gene circuits published in BioModels.
 Scientists, engineers, and other technical professionals require skills in computing and data analysis to do their jobs. We refer to these as data science skills.
 
-Examples of data science skills abound. Biologists search thousands of genomes for DNA sequences with special characteristics, such as genes that transcribe non-coding RNA that is “anti-sense” to messenger RNAs. Astronomers search, integrate, and visualize data from many instruments that produce terabytes of complex data. Social scientists do text analytics on massive repositories of social media data to distill patterns in topics and trends in sentiment.
-
-This course teaches graduate students the software engineering skills to do research in data science fields and to be successful technical professionals in the 21st Century. In particular, this course teaches how to approach computational research with reproducibility in mind: to create sharable and reusable research projects that incorporate both computation and data.
-
-Students will learn the following skills:
-
-- Developing software in a way that it can be used by others, including documentation, installing packages, automating setup, and running computational studies.
-- Creating technical specifications for what a program should do (its use cases) and how this is accomplished (software design).
-Creating, updating, and sharing a project using version control (specifically GitHub).
-- Programming in python using the Python scientific stack, including numpy, pandas, and matplotlib.
-- Developing unit tests that validate important aspects of the project implementation, and, more broadly, using test-driven development to build software.
-- Searching, evaluating, and integrating into a project an externally developed Python packages as well as creating your own Python packages.
-
-The course emphasizes a hands-on learning approach in which class time is often used for problem solving in small groups. The first 7 weeks will teach the skills described above. The remaining three weeks are devoted to the student’s class project, creating a computational research project of their choosing.
-
-Some prior computing experience is desirable. For example, we expect that given a CSV file you can open it and plot the data in a language like MATLAB, IDL, R, or Python.  A Software Carpentry bootcamp, Codeacademy, or similar MOOC would be appropriate venues to learn these skills.  Lessons include, e.g.:
-
-- Using the shell (command line): http://swcarpentry.github.io/shell-novice/
-- General Python overview: http://swcarpentry.github.io/python-novice-inflammation/
-
+Unfortunately, the ability to develop kinetics models for biological systems is severely impaired by the lack of good software tools 
+for model building. The course will explore ideas from software engineering that can be
+applied to building kinetics models. Here are a two examples. 
+- Kinetics models tend to be large and redundant because of reaction combinatorics. 
+In software engineering, we use templates to handle repetitive information.
+Something similar may be possible to represent reactions between complexes.
+- There are no tools static error checking, such as verifying mass balance and charge balance in reactions. 
+In software engineering, we use linters to do static error checking.
+A "reaction linter" might do static error
+checking for mass and charge balance.
 
 
 <div class="home">
