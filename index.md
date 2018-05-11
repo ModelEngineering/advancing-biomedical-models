@@ -56,15 +56,16 @@ such as verifying mass balance and charge balance.
 Software engineers use `linters` to do static error checking.
 A "reaction linter" might do static error
 checking for mass and charge balance.
-- Kinetics models are rarely reused as-is.
-Rather, researchers typically adapt the ideas behind published kinetics models into their system.
-From the growth of software over the last fifty years, it is clear that re-use is
-at the foundation of progress.
-In software, this is accomplished by modularization, especially through information hiding.
-However, modularization of kinetics models is far too restrictive for kinetics models.
+- Kinetics models are rarely re-used.
+Rather, researchers adapt the ideas behind published kinetics models.
+From the growth of software over the last fifty years, it is clear that re-use is essential
+to progress.
+In software, re-use is accomplished by modularization, especially through information hiding.
+However, information hiding is far too restrictive for kinetics models.
 One issue is that
 there must be awareness of chemical complexes in one model that may interact with those in the other model.
 Another issue is ensuring that models make consistent assumptions (e.g., the acidity of the environment).
+Thus, new engineering principles and tools must be developed to facilite re-use of kinetics models.
 
 The seminar is one initiative being undertaken
 to develop a research agenda for the NIH Reproducibility Center recently funded in UW BioEngineering.
