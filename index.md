@@ -62,10 +62,10 @@ From the growth of software over the last fifty years, it is clear that re-use i
 to progress.
 In software, re-use is accomplished by modularization, especially through information hiding.
 However, information hiding is far too restrictive for kinetics models.
-One issue is that
-there must be awareness of chemical complexes in one model that may interact with those in the other model.
+One issue is that model re-use must consider interactions between the chemical complexes being modelled.
 Another issue is ensuring that models make consistent assumptions (e.g., the acidity of the environment).
-Thus, new engineering principles and tools must be developed to facilite re-use of kinetics models.
+As a result of these concerns,
+new engineering principles and tools must be developed to enable re-use of kinetics models.
 
 The seminar is one initiative being undertaken
 to develop a research agenda for the NIH Reproducibility Center recently funded in UW BioEngineering.
