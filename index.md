@@ -46,7 +46,7 @@ The premise of this course is that
 *tools and techniques from software engineering can be adapted to
 biomedical modeling to accelerate innovation and translation into practice*.
 
-Here some examples of challenges in building kinetics models and how techniques from software engineering can help.
+Here are some examples of challenges in building kinetics models and how techniques from software engineering can help.
 - Kinetics models tend to be large and redundant because of reaction combinatorics. 
 Software engineering uses templates to handle repetitive information.
 Something similar may be possible to represent reactions between complexes.
