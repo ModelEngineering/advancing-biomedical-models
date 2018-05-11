@@ -84,8 +84,8 @@ BIOE 599, a topics class in modeling biomedical systems.
 
 ## Prerequsites
 
-Students are assumed to have the equivalent of a high school AP class in biology
-and high school AP chemistry.
+Students are assumed to have the equivalent of a high school biology
+and chemistry.
 
 
 <div class="home">
