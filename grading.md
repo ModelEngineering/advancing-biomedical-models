@@ -10,11 +10,11 @@ The course grade consists of the following components and percentages:
 
 Homework: 20%
 
-Paper presentation: 20%
+Paper presentation: 30%
 
 Course project: 50%
 
-## Homework grading
+## Homework
 
 There will be 2 homeworks, each worth 10 points.
 The homeworks are intended to provide experience with constructing and evaluating

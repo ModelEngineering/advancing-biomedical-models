@@ -70,7 +70,7 @@ new engineering principles and tools must be developed to enable re-use of kinet
 The seminar is one initiative being undertaken
 to develop a research agenda for the NIH Reproducibility Center recently funded in UW BioEngineering.
 As a result, the class will be coordinated with
-BIOE 599, a topics class in modeling biomedical systems.
+BIOE 599, Computational Systems Biology for Medical Applications.
 
 ## Learning Objectives
 
