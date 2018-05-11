@@ -74,7 +74,18 @@ BIOE 599, a topics class in modeling biomedical systems.
 
 ## Learning Objectives
 
+1. Explain the central dogma of biology. Know 5 substructures of cells and their function, and
+4 key biomolecules.
+1. Explain the purpose and need for modeling in biomedicine.
+1. Know the purpose of and key elements in the SBML standard for model exchange.
+1. Explain the objectives and mathematical techniques used in different approaches to modeling.
+1. Construct kinetics models of simple biological systems.
+1. Know two measures of evaluate model uncertainty; write codes to produce these measures from model outputs.
+
 ## Prerequsites
+
+Students are assumed to have the equivalent of a high school AP class in biology
+and high school AP chemistry.
 
 
 <div class="home">
