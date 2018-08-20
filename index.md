@@ -45,6 +45,7 @@ for model building.
 The premise of this course is that 
 *tools and techniques from software engineering can be adapted to
 biomedical modeling to accelerate innovation and translation into practice*.
+We refer to this broad direction as **model engineering**.
 
 Here are some examples of challenges in building kinetics models and how techniques from software engineering can help.
 - Kinetics models tend to be large and redundant because of reaction combinatorics. 
@@ -71,6 +72,7 @@ The seminar is one initiative being undertaken
 to develop a research agenda for the NIH Reproducibility Center recently funded in UW BioEngineering.
 As a result, the class will be coordinated with
 BIOE 599, Computational Systems Biology for Medical Applications.
+More details on model engineering can be found in [this paper](https://drive.google.com/drive/folders/1a3emqNDAo406ZqfvoMzK-zSk8wIY_STN).
 
 ## Learning Objectives
 
