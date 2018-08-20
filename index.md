@@ -72,7 +72,7 @@ The seminar is one initiative being undertaken
 to develop a research agenda for the NIH Reproducibility Center recently funded in UW BioEngineering.
 As a result, the class will be coordinated with
 BIOE 599, Computational Systems Biology for Medical Applications.
-More details on model engineering can be found in [this paper](https://drive.google.com/drive/folders/1a3emqNDAo406ZqfvoMzK-zSk8wIY_STN).
+More details on model engineering can be found in [this paper](https://drive.google.com/open?id=1A5TL6gsXky3p-PsNYZ0_Oaoz6tcGGv6B).
 
 ## Learning Objectives
 
