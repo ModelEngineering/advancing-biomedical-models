@@ -13,7 +13,7 @@ collection: main
 
 - Days: W-F
 - Time: 1:30-2:50
-- Place: TBD
+- Place: Mary Gates Hall (MGH) 058 and Benson Hall (BNS) 203 (see syllabus)
 
 
 ## Course Description
