@@ -6,7 +6,7 @@ collection: main
 
 ## Instructors
 
-- Joseph L. Hellerstein
+- [Joseph L. Hellerstein](https://sites.google.com/uw.edu/joseph-hellerstein/home)
 
 
 ## Logistics
