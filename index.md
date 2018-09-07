@@ -4,7 +4,7 @@ title: Overview
 collection: main
 ---
 
-### The first class is in Bension Hall 203, not Mary Gates Hall.
+### **The first class is in Bension Hall 203, not Mary Gates Hall.**
 
 ## Instructors
 
