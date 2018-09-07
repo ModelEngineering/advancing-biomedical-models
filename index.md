@@ -4,16 +4,19 @@ title: Overview
 collection: main
 ---
 
+###The first class is in Bension Hall 203, not Mary Gates Hall.
+
 ## Instructors
 
 - [Joseph L. Hellerstein](https://sites.google.com/uw.edu/joseph-hellerstein/home)
+- [Herbert Sauro](https://bioe.uw.edu/portfolio-items/sauro/)
 
 
 ## Logistics
 
 - Days: W-F
 - Time: 1:30-2:50
-- Place: Mary Gates Hall (MGH) 058 and Benson Hall (BNS) 203 (see syllabus). **The first class is in Bension Hall 203.**
+- Place: Mary Gates Hall (MGH) 058 and Benson Hall (BNS) 203 (see syllabus).
 
 
 ## Course Description
