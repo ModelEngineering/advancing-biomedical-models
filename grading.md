@@ -10,7 +10,7 @@ The course grade consists of the following components and percentages:
 
 Homework: 20%
 
-Paper presentation: 30%
+Paper review: 30%
 
 Course project: 50%
 
@@ -22,9 +22,9 @@ models.
 The homeworks will use the Antimony python library to model biological systems
 and python matplotlib to plot results.
 
-## Paper Presentation
+## Paper review
 
-Students will present one research paper on biomedical modeling.
+Students will present and review one research paper on biomedical modeling.
 
 ## Course Project
 
