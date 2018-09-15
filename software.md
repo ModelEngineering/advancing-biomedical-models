@@ -4,9 +4,8 @@ title: Software
 collection: main
 ---
 
-## Software
-
-The class will feature in-class exercises, so please bring a laptop to class
+The class will feature in-class exercises. 
+Please bring a laptop to class.
 
 Please install
 Tellurium (http://tellurium.analogmachine.org/).
