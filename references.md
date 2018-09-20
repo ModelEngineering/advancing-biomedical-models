@@ -16,3 +16,8 @@ introduction or refresher to molecular biology.
 ### Course Text
 
 - Pathway Modeling for Systems Biology, Herbert Sauro. A PDF of the book will be provided.
+
+### Articles
+
+1.  Vilar et al. [Modeling network dynamics: 
+The lac operon, a case study.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2172934/). Journal of Cell Biology. 2003.
