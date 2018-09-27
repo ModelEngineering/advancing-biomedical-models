@@ -6,7 +6,7 @@ collection: main
 
 | Week  | Wednesday                     | Friday                  | Where |
 |-------|:------------------------------|:------------------------|:------|
-| 09/24 | [Course introduction. Biochemistry basics.](https://github.com/ModelEngineering/advancing-biomedical-models/blob/master/Lectures/CSE%20599V%20Lecture%201-%20Course%20Introduction%20and%20Biochemistry%20Basics.pdf) | Modeling basics: variables, dynamical systems, kinetics. | BNS\*
+| 09/24 | [Course introduction. Biochemistry basics.](https://github.com/ModelEngineering/advancing-biomedical-models/blob/master/Lectures/CSE%20599V%20Lecture%201-%20Course%20Introduction%20and%20Biochemistry%20Basics.pdf) | [Modeling basics: variables, dynamical systems, kinetics.](https://github.com/ModelEngineering/advancing-biomedical-models/blob/master/Lectures/CSE%20599V%20Lecture%202-%20Modeling%20Essentials.pdf) | BNS\*
 | 10/01 | Overview of systems biology modeling. | Enzyme kinetics and technical modeling. | BNS
 | 10/08 | Build a model I: Biological background and conceptual model. | Build a model II: Technical models, obtaining parameter values, coding in Antimony. | BNS
 | 10/15 | Fitting model parameters. | Debugging models. | BNS
