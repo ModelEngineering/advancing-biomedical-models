@@ -15,7 +15,7 @@ introduction or refresher to molecular biology.
 
 ### Course Text
 
-- Pathway Modeling for Systems Biology, Herbert Sauro. A PDF of the book will be provided.
+- Sauro, Herbert. [Pathway Modeling for Systems Biology](https://github.com/ModelEngineering/advancing-biomedical-models/blob/master/references/PathwayModeling_10012018.pdf). 2018.
 
 ### Articles
 
