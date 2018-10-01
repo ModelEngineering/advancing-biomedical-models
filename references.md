@@ -19,5 +19,8 @@ introduction or refresher to molecular biology.
 
 ### Articles
 
+1. Tyson et al. [Sniffers, buzzers, toggles and blinkers: dynamics of regulatory and signaling pathways in the cell](https://www.ncbi.nlm.nih.gov/pubmed/12648679),
+Curr Opin Cell Biol. 2003 Apr;15(2):221-31.
+
 1.  Vilar et al. [Modeling network dynamics: 
 The lac operon, a case study.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2172934/). Journal of Cell Biology. 2003.
