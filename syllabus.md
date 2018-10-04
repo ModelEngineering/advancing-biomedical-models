@@ -23,6 +23,6 @@ collection: main
 
 \*\*MGH is Mary Gates Hall 058
 
-\*\*\* Chapters in the text book "Introduction to Pathway Modeling"
+\*\*\* Chapters in the text book [Introduction to Pathway Modeling](https://github.com/ModelEngineering/advancing-biomedical-models/blob/master/references/PathwayModeling_10012018.pdf)
 
 {: rules="groups"}
