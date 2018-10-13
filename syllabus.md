@@ -19,6 +19,8 @@ collection: main
 | 11/26 | Linting kinetics models. | Template processor for system biology models. | MGH | |
 | 12/03 | Vision for Model Engineering. | Presentation of research proposals. | MGH | |
 
+1. [Homework 1](https://github.com/ModelEngineering/advancing-biomedical-models/blob/master/homework/Assignment1.pdf) is due Oct. 24.
+
 \*BNS is 203 Benson Hall
 
 \*\*MGH is Mary Gates Hall 058

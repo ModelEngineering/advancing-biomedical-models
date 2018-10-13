@@ -22,7 +22,7 @@ models.
 The homeworks will use the Antimony python library to model biological systems
 and python matplotlib to plot results.
 
-- Homework 1: Due Oct 24 - [gene regulation](https://drive.google.com/file/d/1rSrgN1Bg8bVUdi3DI8vWOQOH6rPi-Bj0/view)
+- Homework 1: Due Oct 24 - [gene regulation](https://github.com/ModelEngineering/advancing-biomedical-models/blob/master/homework/Assignment1.pdf)
 
 ## Paper review
 
