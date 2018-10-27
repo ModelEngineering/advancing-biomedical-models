@@ -24,3 +24,5 @@ Curr Opin Cell Biol. 2003 Apr;15(2):221-31.
 
 1.  Vilar et al. [Modeling network dynamics: 
 The lac operon, a case study.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2172934/). Journal of Cell Biology. 2003.
+
+1. Boris N. Kholodenko. [Negative feedback and ultrasensitivity can bring about oscillations in the mitogen-activated protein kinase cascades](http://biomodels.caltech.edu:8080/courses/20130627/Kholodenko2000.pdf)
