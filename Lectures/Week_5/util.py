@@ -35,6 +35,31 @@ def makeSyntheticData(modelstr, std=1.0,
   :param int num_points: num_points of simulation
   :return np.namedArray: columns have 'time' followed by the species
   """
-  r = te.loada(model)
+  r = te.loada(modelstr)
   result = r.simulate(start, stop, num_points)
-  
+  length = result.shape[0]
+  num_response_vars = result.shape[1] - 1
+  for idx in range(1, num_response_vars + 1):
+    result[:, idx] = result[:, idx] + np.random.normal(0, std, length)
+  return result
+
+def generateBootstrapData(y_obs, y_fit):
+  """
+  Generates synthetic observations from residuals.
+  :param np.array y_obs: observed data
+  :param np.array y_fit: fitted data
+  :return np.array: synthetic data from randomizing residuals
+  """
+  def generateData(y_obs, y_fit):
+    """
+    :param np.array y_obs:
+    :param np.array y_fit:
+    :return np.array: bootstrap data
+    """
+    residuals = y_obs - y_fit
+    length = len(y_obs)
+    residuals = residuals.reshape(length)
+    samples = np.random.randint(0, length, length)
+    result = y_fit + residuals[samples]
+    result = result.reshape(length)
+    return result
