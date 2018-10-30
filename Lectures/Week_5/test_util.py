@@ -11,7 +11,7 @@ class TestFunctions(unittest.TestCase):
     size = len([g for g in generator])
     self.assertEqual(size, NUM_FOLDS)
 
-  def testMakeSyntheticData(self):
+  def testSimulate(self):
     modelstr = '''
     model test
         species A, B, C;
@@ -27,7 +27,7 @@ class TestFunctions(unittest.TestCase):
 
     end
     '''
-    result = util.makeSyntheticData(modelstr)
+    result = util.simulate(modelstr, std=1.0)
     self.assertEqual(result.shape, (100, 4))
 
 if __name__ == "__main__":
