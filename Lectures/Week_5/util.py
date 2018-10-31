@@ -36,6 +36,9 @@ def plotFit(data, fit, is_plot=True):
   plt.scatter(data, fit)
   plt.xlabel("Observed")
   plt.ylabel("Fitted")
+  line_x = [data[0], data[-1]]
+  line_y = [fit[0], fit[-1]]
+  plt.plot(line_x, line_y, 'r')
   if is_plot:
     plt.show()
 
