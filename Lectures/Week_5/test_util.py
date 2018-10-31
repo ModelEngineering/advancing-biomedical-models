@@ -29,11 +29,5 @@ class TestFunctions(unittest.TestCase):
     # Smoke test
     util.plotFit(range(10), range(10), is_plot=False)
 
-  def testMakeKwargs(self):
-    kwargs = util.makeKwargs(PARAMETERS)
-    self.assertTrue(isinstance(kwargs, dict))
-    for name in PARAMETERS:
-      self.assertTrue(name in kwargs)
-
 if __name__ == "__main__":
   unittest.main()

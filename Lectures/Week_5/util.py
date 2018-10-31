@@ -41,15 +41,3 @@ def plotFit(data, fit, is_plot=True):
   plt.plot(line_x, line_y, 'r')
   if is_plot:
     plt.show()
-
-def makeKwargs(params):
-  """
-  Creates kwargs from Parameters to make function call.
-  :param lmfit.Parameters
-  :return dict:
-  """
-  kwargs = {}
-  for name in params:
-    param = params.get(name)
-    kwargs[name] = param.value
-  return kwargs
