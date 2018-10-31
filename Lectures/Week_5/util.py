@@ -46,6 +46,7 @@ def makeKwargs(params):
   :return dict:
   """
   kwargs = {}
-  for name in fitter.params:
-    param = fitter.params.get(name)
+  for name in params:
+    param = params.get(name)
     kwargs[name] = param.value
+  return kwargs
