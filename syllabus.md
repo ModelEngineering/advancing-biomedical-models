@@ -11,7 +11,7 @@ collection: main
 | 10/08 | Build a model: Biological background and conceptual model. | Numerical solutions to differential equations. System responses. ([materials](https://github.com/ModelEngineering/advancing-biomedical-models/tree/master/Lectures/Week_2) [video](https://uw.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=03dabaee-3f06-4b19-80a6-a9770152115d)) | BNS | 5, 6, 7 |
 | 10/15 | Fitting model parameters. | Debugging models. | BNS | |
 | 10/22 | [Quantifying model quality and  parameter variability.](https://github.com/ModelEngineering/advancing-biomedical-models/tree/master/Lectures/Week_4) ([video](https://uw.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=3da86903-1f73-4a31-b9c9-a98301694610)) | [Cross Validation and Bootstrapping](https://github.com/ModelEngineering/advancing-biomedical-models/tree/master/Lectures/Week_4) (Videos: [cross validation](https://uw.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=69087f3f-2333-4b94-aa09-a9850152900a), [bootstrapping](https://uw.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=3dbc6b82-56a1-48bc-8f1c-a9850160f8bf))| BNS | 10 |
-| 10/29 | Workflow for model building. | Software standards and databases. | BNS | |
+| 10/29 | [Workflow for model building.](https://github.com/ModelEngineering/advancing-biomedical-models/tree/master/Lectures/Week_5) | Software standards and databases. | BNS | |
 | 11/05 | Student reviews of published models. | Student reviews of published models. | BNS | |
 | 11/12 | Model Engineering I: problems addressed and scope. | Model Engineering II: survey of current work. | MGH\*\* | |
 | 11/12 | Model Engineering I: problems addressed and scope. | Model Engineering II: survey of current work. | MGH | |
