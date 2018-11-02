@@ -83,7 +83,9 @@ def makeParametersStatistics(parameters_collection):
   """
   result = {}
   for name, values in getParameterData(parameters_collection).items():
-    result[name] = (np.mean(values), np.std(values))
+    result[name] = (np.mean(values), 
+                    np.std(values)/np.sqrt(len(values))
+                   )
   return result
 
 def plotFit(data, fit, is_plot=True):
