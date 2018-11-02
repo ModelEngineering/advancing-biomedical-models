@@ -1,4 +1,7 @@
-"""Tests for simulation utility functions."""
+"""
+Tests for simulation utility functions.
+To run: python test_util.py
+"""
 
 import util
 
