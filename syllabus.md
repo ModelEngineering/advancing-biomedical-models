@@ -13,17 +13,15 @@ collection: main
 | 10/22 | [Quantifying model quality and  parameter variability.](https://github.com/ModelEngineering/advancing-biomedical-models/tree/master/Lectures/Week_4) ([video](https://uw.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=3da86903-1f73-4a31-b9c9-a98301694610)) | [Cross Validation and Bootstrapping](https://github.com/ModelEngineering/advancing-biomedical-models/tree/master/Lectures/Week_4) (Videos: [cross validation](https://uw.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=69087f3f-2333-4b94-aa09-a9850152900a), [bootstrapping](https://uw.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=3dbc6b82-56a1-48bc-8f1c-a9850160f8bf))| BNS | 10 |
 | 10/29 | [Workflow for model building.](https://github.com/ModelEngineering/advancing-biomedical-models/tree/master/Lectures/Week_5) ([video](https://uw.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=a71fbb00-1349-4803-93a6-a98a0153dc43) [Jupyter-Notebook](https://github.com/ModelEngineering/advancing-biomedical-models/blob/master/Lectures/Week_5/lecture11.ipynb) [util.py](https://github.com/ModelEngineering/advancing-biomedical-models/blob/master/Lectures/Week_5/util.py) [test_util.py](https://github.com/ModelEngineering/advancing-biomedical-models/blob/master/Lectures/Week_5/test_util.py)) | Software standards and databases. | BNS | |
 | 11/05 | Standards. | [Model Engineering](https://github.com/ModelEngineering/advancing-biomedical-models/tree/master/Lectures/Week_6) | BNS | |
-| 11/12 | Model testing and validation. | Model Engineering II: survey of current work. | MGH\*\* | |
-| 11/12 | Model Engineering I: problems addressed and scope. | Model Engineering II: survey of current work. | MGH | |
-| 11/19 | NO CLASS. Work on research proposal. | NO CLASS. | MGH | |
-| 11/26 | Linting kinetics models. | Template processor for system biology models. | MGH | |
-| 12/03 | Vision for Model Engineering. | Presentation of research proposals. | MGH | |
+| 11/12 | Model testing and validation. | Model Engineering II: survey of current work. | BNS\*\* | |
+| 11/12 | Model Engineering I: problems addressed and scope. | Model Engineering II: survey of current work. | BNS | |
+| 11/19 | NO CLASS. Work on research proposal. | NO CLASS. | BNS | |
+| 11/26 | Linting kinetics models. | Template processor for system biology models. | BNS | |
+| 12/03 | Vision for Model Engineering. | Presentation of research proposals. | BNS | |
 
 1. [Homework 1](https://github.com/ModelEngineering/advancing-biomedical-models/blob/master/homework/Assignment1.pdf) is due Oct. 24.
 
 \*BNS is 203 Benson Hall
-
-\*\*MGH is Mary Gates Hall 058
 
 \*\*\* Chapters in the text book [Introduction to Pathway Modeling](https://github.com/ModelEngineering/advancing-biomedical-models/blob/master/references/PathwayModeling_10012018.pdf)
 
