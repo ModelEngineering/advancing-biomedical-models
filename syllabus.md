@@ -15,7 +15,7 @@ collection: main
 | 11/05 | Standards. | [Model Engineering](https://github.com/ModelEngineering/advancing-biomedical-models/tree/master/Lectures/Week_6) | BNS | |
 | 11/12 | [Data Management for BioMedical Models](https://github.com/ModelEngineering/advancing-biomedical-models/tree/master/Lectures/Week_7) ([video](https://uw.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=d02205cd-73d1-4880-b6f5-a9980162c350)) | Dynamic stability and pathway motifs.  | BNS\*\* | |
 | 11/12 | Dynamic Stability and pathway motifs. | Limits to current approaches. | BNS | |
-| 11/19 | NO CLASS. Work on research proposal. | NO CLASS. | BNS | |
+| 11/19 | TBD | NO CLASS. | BNS | |
 | 11/26 | Stochastic and Pharma models. | Stochastics and Pharma models. | BNS | |
 | 12/03 | Student presentations. | Student presentations. | BNS | |
 
