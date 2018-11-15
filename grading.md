@@ -45,3 +45,4 @@ the technical solution.
 1. Future work.
 The grading rubric will emphasize innovation in the problem addressed, feasibility of the technical approach, and the benefits that could
 be provided by the tool.
+The write-up is due by midnight of the last day of class, 12/7.
