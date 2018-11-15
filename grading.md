@@ -38,8 +38,10 @@ paper should be structured as:
 1. Introduction. Describe the problem addressed.
 1. Related work.
 1. Technical approach. Describe how you wll address the problem described in the introduction.
-1. Preliminary implementation.
+You should include relevant technical details such as
+algorithms, data flows, software designs.
+1. Preliminary implementation. Provide python codes the implement one or more key elements of
+the technical solution.
 1. Future work.
-The grading rubric will emphasize innovation in the problem addressed and the benefits that could
+The grading rubric will emphasize innovation in the problem addressed, feasibility of the technical approach, and the benefits that could
 be provided by the tool.
-Students are expected to do a partial implementation that would be suitable for a proof-of-concept demo.
