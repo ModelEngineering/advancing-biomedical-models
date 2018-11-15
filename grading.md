@@ -10,7 +10,7 @@ The course grade consists of the following components and percentages:
 
 Homework: 20%
 
-Paper review: 30%
+Modeling game: 30%
 
 Course project: 50%
 
