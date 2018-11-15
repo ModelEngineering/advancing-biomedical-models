@@ -10,7 +10,7 @@ The course grade consists of the following components and percentages:
 
 Homework: 20%
 
-Paper review: 30%
+Modeling game: 30%
 
 Course project: 50%
 
@@ -26,13 +26,27 @@ and python matplotlib to plot results.
 
 - Homework 2: Reconstruct the model in the Koholoenko paper cited in the references page.
 
-## Paper review
+## Modeling Game
 
-Students will present and review one research paper on biomedical modeling.
+Students will participate in the modeling game and produce a model that conforms well with the data provided.
 
 ## Course Project
 
 The project will be to define and partially develop a tool that aids in building biomedical models.
-The grading rubric will emphasize innovation in the problem addressed and the benefits that could
+There will be a presentation, a paper, and code in a github repository. The presentation and
+paper should be structured as:
+
+1. Introduction. Describe the problem addressed.
+1. Related work.
+1. Technical approach. Describe how you wll address the problem described in the introduction.
+You should include relevant technical details such as
+algorithms, data flows, and software designs.
+1. Preliminary implementation. Provide python codes that implement one or more key elements of
+the technical solution.
+1. Disucssion and Future Work.
+Discuss the trade-offs and challenges of the approach that you propose.
+Describe the next steps to build a realistic tool.
+
+The grading rubric will emphasize innovation in the problem addressed, feasibility of the technical approach, and the benefits that could
 be provided by the tool.
-Students are expected to do a partial implementation that would be suitable for a proof-of-concept demo.
+The write-up is due by midnight of the last day of class, 12/7.
