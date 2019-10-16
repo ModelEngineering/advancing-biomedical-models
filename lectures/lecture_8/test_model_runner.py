@@ -13,10 +13,21 @@ MODEL = """
      k1 = 0.15
      k2 = 0.25
 """
+
+MODEL = """
+     A -> B; k1*A
+      
+     A = 50; 
+     B = 0;
+     C = 0;
+     k1 = 0.15
+"""
 CONSTANTS = ['k1', 'k2']
+CONSTANTS = ['k1']
 SIMULATION_TIME = 30
 NUM_POINTS = 5
 COLUMNS = ['time', 'A', 'B', 'C']
+COLUMNS = ['time', 'A', 'B']
 
 def testConstructor():
   runner = model_runner.ModelRunner(MODEL, CONSTANTS,

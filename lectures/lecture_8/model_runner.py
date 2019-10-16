@@ -118,6 +118,6 @@ class ModelRunner(object):
     df_estimates = pd.DataFrame(estimates)
     df_result = pd.DataFrame()
     df_result[MEAN] = df_estimates.mean(axis=0)
-    df_result[STD] = df_estimates.mean(axis=0)
+    df_result[STD] = df_estimates.std(axis=0)
     return df_result
         
