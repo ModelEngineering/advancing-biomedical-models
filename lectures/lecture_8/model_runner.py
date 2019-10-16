@@ -23,18 +23,8 @@ def residuals(parameters):
   in the model.
   :param lmfit.Parameter parameters:
   """
-  runner.road_runner.reset()  
-  param_dict = parameters.valuesdict()
-  for constant in runner.constants:
-    stmt = "runner.road_runner.%s = param_dict['%s']" % (
-        constant, constant)
-    exec(stmt)
-  sim_data = runner.road_runner.simulate(0,
-       runner.simulation_time, runner.num_points)
-  df_sim_data = pd.DataFrame(sim_data)
-  del df_sim_data[df_sim_data.columns.tolist()[0]]  # Delete time
-  df_sim_data.columns = runner.species
-  df_residuals = runner.df_noisey - df_sim_data
+  df_sim_data, _ = runner.runSimulation(parameters=parameters)
+  df_residuals = runner.df_observation - df_sim_data
   ser = df_residuals[df_residuals.columns[-1]]
   return np.array(ser.tolist())
 
@@ -51,40 +41,57 @@ class ModelRunner(object):
     :param int num_points: number of data points
     """
     self.model_str = model_str
+    self.road_runner = te.loada(self.model_str)
     self.constants = constants
     self.simulation_time = simulation_time
     self.num_points = num_points
     self.noise_std = noise_std
-    self._makeNoiselessData()
+    self.df_observation, self_df_time = self.generateObservations()
+    self.species = self.df_observation.columns.tolist()
+    self.df_noisey = None
 
-
-  def _makeNoiselessData(self):
-    self.road_runner = te.loada(self.model_str)
+  def runSimulation(self, parameters=None):
+    """
+    Runs a simulation.
+    :param Parameters parameters: If None, use existing values.
+    :return pd.Series, pd.DataFrame: time, concentrations
+    """
+    self.road_runner.reset()
+    if parameters is not None:
+      # Set the value of constants in the simulation
+      param_dict = parameters.valuesdict()
+      for constant in param_dict.keys():
+        stmt = "runner.road_runner.%s = param_dict['%s']" % (
+            constant, constant)
+        exec(stmt)
+    #
     data = self.road_runner.simulate(0,
         self.simulation_time, self.num_points)
-    self.df_data = pd.DataFrame(data)
-    columns = [c[1:-1] for c in data.colnames]
+    # Construct the data frames
+    df_alldata = pd.DataFrame(data)
+    columns = [c[1:-1] for c in data.colnames]  # Eliminate square brackets
     columns[0] = TIME
-    self.df_data.columns = columns
-    self.df_noiseless = self.df_data[self.df_data.columns[1:]]
-    self.species = self.df_noiseless.columns.tolist()
-    self.ser_times = self.df_data[TIME]
+    df_alldata.columns = columns
+    ser_time = df_alldata[TIME]
+    df_data = df_alldata[df_alldata.columns[1:]]
+    return df_data, ser_time
 
-  def generateObservations(self, std=None):
+  def generateObservations(self, parameters=None, std=None):
     """
     Creates random observations by adding normally distributed
     noise.
     :param float std: if none, use constructor
-    :return pd.DataFrame: noisey data
+    :return pd.DataFrame, ser_times: noisey data, time
     """
+    df_data, ser_time = self.runSimulation(parameters=parameters)
     if std is None:
       std = self.noise_std
     df_rand = pd.DataFrame(np.random.normal(0, std,
-         (len(self.df_noiseless),len(self.species))))
-    df_rand.columns = self.species
-    df = self.df_noiseless + df_rand
+         (len(df_data),len(df_data.columns))))
+    df_rand.columns = df_data.columns
+    df = df_data + df_rand
     df = df.applymap(lambda v: 0 if v < 0 else v)
-    return df
+    return df, ser_time
   
   # FIXME: Allow for specifying min/max for constants 
   def fit(self, count=1, method='leastsq', std=None, func=None):
@@ -93,6 +100,7 @@ class ModelRunner(object):
     :param int count: Number of fits to do, each with different
                       noisey data
     :return pd.DataFrame: columns species; rows are MEAN, STD
+    Assigns value to df_noisey to communicate with func
     """
     if func is None:
       global runner
@@ -104,8 +112,9 @@ class ModelRunner(object):
     estimates = {}
     for constant in self.constants:
         estimates[constant] = []  # Initialize to empty list
+    # Do the analysis multiple times with different observations
     for _ in range(count):
-      self.df_noisey = self.generateObservations(std=std)
+      self.df_observation, self_df_time = self.generateObservations()
       parameters = lmfit.Parameters()
       for constant in self.constants:
           parameters.add(constant, value=1, min=0, max=10)

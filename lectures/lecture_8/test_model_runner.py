@@ -33,21 +33,21 @@ COLUMNS = ['time', 'A', 'B', 'C']
 def testConstructor():
   runner = model_runner.ModelRunner(MODEL, CONSTANTS,
       SIMULATION_TIME, NUM_POINTS)
-  trues = [c in COLUMNS for c in runner.df_data.columns]
+  trues = [c in COLUMNS for c in runner.df_observation.columns]
   assert(all(trues))
-  assert(len(runner.df_noiseless) > 0)
+  assert(len(runner.df_observation) > 0)
 
 def testGenerateObservations():
   runner = model_runner.ModelRunner(MODEL, CONSTANTS,
       SIMULATION_TIME, NUM_POINTS)
-  df = runner.generateObservations(0.1)
+  df, _ = runner.generateObservations(std=0.1)
   assert(len(set(df.columns).symmetric_difference(
-      runner.df_noiseless.columns)) == 0)
+      runner.df_observation.columns)) == 0)
 
 def testResiduals():
   runner = model_runner.ModelRunner(MODEL, CONSTANTS,
       SIMULATION_TIME, NUM_POINTS)
-  runner.df_noisey = runner.generateObservations(0.1)
+  runner.df_observation, _ = runner.generateObservations(std=0.1)
   model_runner.runner = runner
   parameters = lmfit.Parameters()
   for constant in CONSTANTS:
