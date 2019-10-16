@@ -46,7 +46,7 @@ class ModelRunner(object):
     self.simulation_time = simulation_time
     self.num_points = num_points
     self.noise_std = noise_std
-    self.df_observation, self_df_time = self.generateObservations()
+    self.df_observation, self.ser_time = self.generateObservations()
     self.species = self.df_observation.columns.tolist()
     self.df_noisey = None
 

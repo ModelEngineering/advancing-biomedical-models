@@ -26,9 +26,19 @@ MODEL = """
      k2 = 0.25
 """
 CONSTANTS = ['k1', 'k2']
+COLUMNS = ['time', 'A', 'B', 'C']
+#
+MODEL1 = """
+     A -> B; k1*A
+      
+     A = 50; 
+     B = 0;
+     k1 = 0.15
+"""
+CONSTANT1S = ['k1']
 SIMULATION_TIME = 30
 NUM_POINTS = 5
-COLUMNS = ['time', 'A', 'B', 'C']
+COLUMN1S = ['time', 'A', 'B']
 
 def testConstructor():
   runner = model_runner.ModelRunner(MODEL, CONSTANTS,
@@ -56,9 +66,10 @@ def testResiduals():
   assert(len(residuals) == NUM_POINTS)
 
 def testFit():
-  runner = model_runner.ModelRunner(MODEL, CONSTANTS,
-      SIMULATION_TIME, NUM_POINTS)
-  df = runner.fit(count=2)
+  runner = model_runner.ModelRunner(MODEL1, CONSTANT1S,
+      SIMULATION_TIME, NUM_POINTS, noise_std=0.0)
+  df = runner.fit(count=20)
+  import pdb; pdb.set_trace()
   assert(len(df.columns) == 2)
   assert(len(df) == len(CONSTANTS))
   
