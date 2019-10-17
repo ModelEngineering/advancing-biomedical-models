@@ -1,0 +1,3 @@
+[submodule "lectures/common_python"]
+	path = lectures/common_python
+	url = https://github.com/ScienceStacks/common_python.git
