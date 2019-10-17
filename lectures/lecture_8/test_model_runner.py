@@ -63,17 +63,25 @@ def testResiduals():
   for constant in CONSTANTS:
     parameters.add(constant, value=1, min=0, max=10)
   residuals = model_runner.residuals(parameters)
-  assert(len(residuals) == NUM_POINTS)
+  assert(len(residuals) ==  \
+      NUM_POINTS*len(runner.df_observation.columns))
 
 def testFit():
-  runner = model_runner.ModelRunner(MODEL1, CONSTANT1S,
-      SIMULATION_TIME, NUM_POINTS, noise_std=0.0)
-  df = runner.fit(count=20)
-  import pdb; pdb.set_trace()
-  assert(len(df.columns) == 2)
-  assert(len(df) == len(CONSTANTS))
-  
-if True:
+  for constants, model in [(CONSTANTS, MODEL), (CONSTANT1S, MODEL1)]:
+    runner = model_runner.ModelRunner(model, constants,
+        SIMULATION_TIME, NUM_POINTS, noise_std=0.0)
+    df = runner.fit(count=20)
+    assert(len(df.columns) == 2)
+    assert(len(df) == len(constants))
+
+def testDfToSer():
+  data = range(5)
+  df = pd.DataFrame({'a': data, 'b': [2*d for d in data]})
+  ser = model_runner.dfToSer(df)
+  assert(len(ser) == len(df.columns)*len(df))
+ 
+if __name__ == "__main__": 
+  testDfToSer()
   testConstructor()
   testGenerateObservations()
   testResiduals()

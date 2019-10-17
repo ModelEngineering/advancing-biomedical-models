@@ -19,14 +19,22 @@ runner = None
 def residuals(parameters):
   """
   Computes residuals from the parameters using the global runner
-  Residuals are computed based on the last chemical species
+  Residuals are computed based on the values of chemical species
   in the model.
   :param lmfit.Parameter parameters:
   """
   df_sim_data, _ = runner.runSimulation(parameters=parameters)
   df_residuals = runner.df_observation - df_sim_data
-  ser = df_residuals[df_residuals.columns[-1]]
+  ser = dfToSer(df_residuals)
   return np.array(ser.tolist())
+
+def dfToSer(df):
+  """
+  Converts a dataframe to a series.
+  :param pd.DataFrame df:
+  :return pd.Series:
+  """
+  return pd.concat([df[c] for c in df.columns])
 
 
 ############ CLASSES ######################
@@ -119,7 +127,7 @@ class ModelRunner(object):
       for constant in self.constants:
           parameters.add(constant, value=1, min=0, max=10)
       # Create the minimizer
-      fitter = lmfit.Minimizer(residuals, parameters)
+      fitter = lmfit.Minimizer(func, parameters)
       result = fitter.minimize (method=method)
       for constant in self.constants:
         estimates[constant].append(
