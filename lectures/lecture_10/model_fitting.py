@@ -20,13 +20,14 @@ MODEL = """
      k1 = 0.1
      k2 = 0.2
 """
-SIM_TIME = 30
-NUM_POINTS = 10
 CONSTANTS = ['k1', 'k2']
+NOISE_STD = 0.5
+NUM_POINTS = 10
 PARAMETERS = lmfit.Parameters()
 PARAMETERS.add('k1', value=1, min=0, max=10)
 PARAMETERS.add('k2', value=1, min=0, max=10)
 ROAD_RUNNER = None
+SIM_TIME = 30
 #ROAD_RUNNER = te.loada(MODEL)
 
 
@@ -120,7 +121,8 @@ def foldGenerator(num_points, num_folds):
     test_indices = np.array(test_indices)
     yield train_indices, test_indices
 
-def makeObservations(sim_time=SIM_TIME, num_points=NUM_POINTS, noise_std=0.5, **kwargs):
+def makeObservations(sim_time=SIM_TIME, num_points=NUM_POINTS,
+    noise_std=NOISE_STD, **kwargs):
   """
   Creates synthetic observations.
   :param int sim_time: time to run the simulation
@@ -135,7 +137,8 @@ def makeObservations(sim_time=SIM_TIME, num_points=NUM_POINTS, noise_std=0.5, **
   # Add randomness
   for i in range (num_points):
     for j in range(1, num_cols):
-      data[i, j] = max(obs_data[i, j] + np.random.normal(0, noise_std, 1), 0)
+      data[i, j] = max(data[i, j]  \
+          + np.random.normal(0, noise_std, 1), 0)
   return data
 
 def fit(obs_data, indices=None, parameters=PARAMETERS, method='leastsq',
@@ -158,7 +161,8 @@ def fit(obs_data, indices=None, parameters=PARAMETERS, method='leastsq',
     """
     sim_data = runSimulation(parameters=parameters, **kwargs)
     sim_data = sim_data[:, 1:]  # Skip time
-    return arrayDifference(obs_data, sim_data, indices=indices)
+    residuals = arrayDifference(obs_data, sim_data, indices=indices)
+    return residuals
   # Estimate the parameters for this fold
   fitter = lmfit.Minimizer(calcSimulationResiduals, parameters)
   fitter_result = fitter.minimize(method=method)
@@ -166,7 +170,7 @@ def fit(obs_data, indices=None, parameters=PARAMETERS, method='leastsq',
 
 def cross_validate(obs_data, model=MODEL, sim_time=SIM_TIME,
     num_points=NUM_POINTS, parameters=PARAMETERS,
-    noise_std=0.5, num_folds=3):
+    num_folds=3):
   """
   Performs cross validation on an antimony model.
   :param ndarray obs_data: data to fit; columns are species; rows are time instances

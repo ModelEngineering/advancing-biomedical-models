@@ -2,8 +2,8 @@
 
 import model_fitting
 
-import numpy as np
 import lmfit
+import numpy as np
 
 ############ CONSTANTS #############
 NROWS = 10
@@ -69,6 +69,30 @@ def testRunSimulation():
   for i in range(nrows):
     for j in range(ncols):
       assert(np.isclose(data1[i,j], data2[i,j]))
+
+def testMakeObservations():
+  obs_data = model_fitting.makeObservations(
+      num_points=model_fitting.NUM_POINTS,
+      road_runner=model_fitting.ROAD_RUNNER)
+  obs_data = obs_data[:, 1:]
+  data = model_fitting.runSimulation(
+      num_points=model_fitting.NUM_POINTS,
+      road_runner=model_fitting.ROAD_RUNNER)
+  data = data[:, 1:]
+  nrows, _ = np.shape(data)
+  assert(nrows == model_fitting.NUM_POINTS)
+  std = np.sqrt(np.var(model_fitting.arrayDifference(obs_data, data)))
+  assert(std < 3*model_fitting.NOISE_STD)
+  assert(std > model_fitting.NOISE_STD/3.0)
+
+def testFit():
+  obs_data = model_fitting.makeObservations()
+  parameters = model_fitting.fit(obs_data[:, 1:])
+  param_dict = dict(parameters.valuesdict())
+  expected_param_dict = dict(model_fitting.PARAMETERS.valuesdict())
+  diff = set(param_dict.keys()).symmetric_difference(
+      expected_param_dict.keys())
+  assert(len(diff) == 0)
   
   
 if __name__ == '__main__':
@@ -77,4 +101,6 @@ if __name__ == '__main__':
   testCalcRsq()
   testMakeParameters()
   testRunSimulation()
+  testMakeObservations()
+  testFit()
   print("OK")
