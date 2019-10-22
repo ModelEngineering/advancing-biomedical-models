@@ -127,7 +127,6 @@ def testCrossValidate():
     assert(np.abs(params_dict[name]  \
     - TEST_PARAMETERS.valuesdict()[name]) < 2*params_dict[name])
   
-  
 if __name__ == '__main__':
   testReshapeData() 
   testArrayDifference() 
