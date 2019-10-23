@@ -92,19 +92,22 @@ def testPlotTimeSeries():
   
 
 def testMakeObservations():
-  obs_data = model_fitting.makeObservations(
-      num_points=model_fitting.NUM_POINTS,
-      road_runner=model_fitting.ROAD_RUNNER)
-  data = model_fitting.runSimulation(
-      num_points=model_fitting.NUM_POINTS,
-      road_runner=model_fitting.ROAD_RUNNER)
-  data = data[:, 1:]
-  nrows, _ = np.shape(data)
-  assert(nrows == model_fitting.NUM_POINTS)
-  std = np.sqrt(np.var(model_fitting.arrayDifference(
-      obs_data[:, 1:], data)))
-  assert(std < 3*model_fitting.NOISE_STD)
-  assert(std > model_fitting.NOISE_STD/3.0)
+  def test(num_points):
+    obs_data = model_fitting.makeObservations(
+        num_points=num_points,
+        road_runner=model_fitting.ROAD_RUNNER)
+    data = model_fitting.runSimulation(
+        num_points=num_points,
+        road_runner=model_fitting.ROAD_RUNNER)
+    data = data[:, 1:]
+    nrows, _ = np.shape(data)
+    assert(nrows == num_points)
+    std = np.sqrt(np.var(model_fitting.arrayDifference(
+        obs_data[:, 1:], data)))
+    assert(std < 3*model_fitting.NOISE_STD)
+    assert(std > model_fitting.NOISE_STD/3.0)
+  test(model_fitting.NUM_POINTS)
+  test(2*model_fitting.NUM_POINTS)
 
 def testFit():
   obs_data = model_fitting.makeObservations()
@@ -126,16 +129,31 @@ def testCrossValidate():
   for name in params_dict.keys():
     assert(np.abs(params_dict[name]  \
     - TEST_PARAMETERS.valuesdict()[name]) < 2*params_dict[name])
+
+def testCrossValidate2():
+  num_points = 20
+  obs_data = model_fitting.makeObservations(
+      parameters=TEST_PARAMETERS, num_points=num_points)
+  results_parameters, results_rsq = model_fitting.crossValidate(
+      obs_data, num_points=num_points, num_folds=10)
+  parameters_avg = model_fitting.makeAverageParameters(
+      results_parameters)
+  params_dict = parameters_avg.valuesdict()
+  for name in params_dict.keys():
+    assert(np.abs(params_dict[name]  \
+    - TEST_PARAMETERS.valuesdict()[name]) < 2*params_dict[name])
   
 if __name__ == '__main__':
-  testReshapeData() 
-  testArrayDifference() 
-  testCalcRsq()
-  testMakeParameters()
-  testMakeAverageParameters()
-  testRunSimulation()
-  testPlotTimeSeries()
-  testMakeObservations()
-  testFit()
-  testCrossValidate()
+  if True:
+    testReshapeData() 
+    testArrayDifference() 
+    testCalcRsq()
+    testMakeParameters()
+    testMakeAverageParameters()
+    testRunSimulation()
+    testPlotTimeSeries()
+    testFit()
+    testCrossValidate()
+    testMakeObservations()
+    testCrossValidate2()
   print("OK")

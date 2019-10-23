@@ -24,6 +24,7 @@ MODEL = """
 CONSTANTS = ['k1', 'k2']
 NOISE_STD = 0.5
 NUM_POINTS = 10
+KWARGS_NUM_POINTS = "num_points"
 PARAMETERS = lmfit.Parameters()
 PARAMETERS.add('k1', value=1, min=0, max=10)
 PARAMETERS.add('k2', value=1, min=0, max=10)
@@ -186,7 +187,8 @@ def makeObservations(sim_time=SIM_TIME, num_points=NUM_POINTS,
   :return namedarray: simulation results with randomness
   """
   # Create true values
-  data = runSimulation(sim_time=sim_time, num_points=NUM_POINTS, **kwargs)
+  data = runSimulation(sim_time=sim_time, num_points=num_points,
+      **kwargs)
   num_cols = len(data.colnames) - 1
   # Add randomness
   for i in range (num_points):
@@ -214,7 +216,10 @@ def fit(obs_data, indices=None, parameters=PARAMETERS, method='leastsq',
     :param lmfit.Parameters parameters:
     :param dict kwargs: optional parameters passed to simulation
     """
-    sim_data = runSimulation(parameters=parameters, **kwargs)
+    if not KWARGS_NUM_POINTS in kwargs.keys():
+      kwargs[KWARGS_NUM_POINTS] = np.shape(obs_data)[0]
+    sim_data = runSimulation(parameters=parameters,
+        **kwargs)
     residuals = arrayDifference(obs_data[:, 1:], sim_data[:, 1:],
         indices=indices)
     return residuals
@@ -224,7 +229,7 @@ def fit(obs_data, indices=None, parameters=PARAMETERS, method='leastsq',
   return fitter_result.params
 
 def crossValidate(obs_data, sim_time=SIM_TIME,
-    num_points=NUM_POINTS, parameters=PARAMETERS,
+    num_points=None, parameters=PARAMETERS,
     num_folds=3, **kwargs):
   """
   Performs cross validation on an antimony model.
@@ -238,6 +243,8 @@ def crossValidate(obs_data, sim_time=SIM_TIME,
   :param dict kwargs: optional arguments used in simulation
   :return list-lmfit.Parameters, list-float: parameters and RSQ from folds
   """
+  if num_points is None:
+    num_points = np.shape(obs_data)[0]
   # Iterate for for folds
   fold_generator = foldGenerator(num_points, num_folds)
   result_parameters = []
@@ -247,7 +254,7 @@ def crossValidate(obs_data, sim_time=SIM_TIME,
     new_parameters = parameters.copy()
     fitted_parameters = fit(obs_data,
       indices=train_indices, parameters=new_parameters,
-      sim_time=SIM_TIME, num_points=NUM_POINTS,
+      sim_time=SIM_TIME, num_points=num_points,
       **kwargs)
     result_parameters.append(fitted_parameters)
     # Run the simulation using
