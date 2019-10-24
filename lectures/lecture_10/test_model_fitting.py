@@ -109,6 +109,13 @@ def testMakeObservations():
   test(model_fitting.NUM_POINTS)
   test(2*model_fitting.NUM_POINTS)
 
+def testCalcSimulationResiduals():
+  obs_data = model_fitting.runSimulation(
+      parameters=TEST_PARAMETERS)
+  residuals = model_fitting.calcSimulationResiduals(
+      TEST_PARAMETERS, obs_data)
+  assert(sum(residuals*residuals) == 0)
+
 def testFit():
   obs_data = model_fitting.makeObservations()
   parameters = model_fitting.fit(obs_data)
@@ -152,6 +159,7 @@ if __name__ == '__main__':
     testMakeAverageParameters()
     testRunSimulation()
     testPlotTimeSeries()
+    testCalcSimulationResiduals()
     testFit()
     testCrossValidate()
     testMakeObservations()

@@ -197,6 +197,25 @@ def makeObservations(sim_time=SIM_TIME, num_points=NUM_POINTS,
           + np.random.normal(0, noise_std, 1), 0)
   return data
 
+def calcSimulationResiduals(parameters, obs_data, indices=None, **kwargs):
+  """
+  Runs a simulation with the specified parameters and calculates residuals
+  for the train_indices.
+  :param lmfit.Parameters parameters:
+  :param array obs_data: matrix of data, first col is time.
+  :param list-int indices: indices for which calculation is done
+                           if None, then all.
+  :param dict kwargs: optional parameters passed to simulation
+  """
+  if not KWARGS_NUM_POINTS in kwargs.keys():
+    kwargs[KWARGS_NUM_POINTS] = np.shape(obs_data)[0]
+  sim_data = runSimulation(parameters=parameters,
+      **kwargs)
+  length = np.shape(sim_data)[0]
+  residuals = arrayDifference(obs_data[:, 1:], sim_data[:, 1:],
+      indices=indices)
+  return residuals
+
 def fit(obs_data, indices=None, parameters=PARAMETERS, method='leastsq',
     **kwargs):
   """
@@ -209,22 +228,12 @@ def fit(obs_data, indices=None, parameters=PARAMETERS, method='leastsq',
   :param dict kwargs: optional parameters passed to runSimulation
   :return lmfit.Parameters:
   """
-  def calcSimulationResiduals(parameters):
-    """
-    Runs a simulation with the specified parameters and calculates residuals
-    for the train_indices.
-    :param lmfit.Parameters parameters:
-    :param dict kwargs: optional parameters passed to simulation
-    """
-    if not KWARGS_NUM_POINTS in kwargs.keys():
-      kwargs[KWARGS_NUM_POINTS] = np.shape(obs_data)[0]
-    sim_data = runSimulation(parameters=parameters,
-        **kwargs)
-    residuals = arrayDifference(obs_data[:, 1:], sim_data[:, 1:],
-        indices=indices)
-    return residuals
+  def calcLmfitResiduals(parameters):
+    return calcSimulationResiduals(parameters, obs_data,
+        indices, **kwargs)
+  #
   # Estimate the parameters for this fold
-  fitter = lmfit.Minimizer(calcSimulationResiduals, parameters)
+  fitter = lmfit.Minimizer(calcLmfitResiduals, parameters)
   fitter_result = fitter.minimize(method=method)
   return fitter_result.params
 
