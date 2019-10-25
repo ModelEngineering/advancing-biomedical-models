@@ -132,7 +132,10 @@ def runSimulation(sim_time=SIM_TIME,
     # Set the simulation constants for all parameters
     for constant in parameter_dict.keys():
       stmt = "road_runner.%s = parameter_dict['%s']" % (constant, constant)
-      exec(stmt)
+      try:
+        exec(stmt)
+      except:
+        import pdb; pdb.set_trace()
   return road_runner.simulate (0, sim_time, num_points)
 
 def plotTimeSeries(data, is_scatter=False, title="", 
@@ -189,7 +192,7 @@ def makeObservations(sim_time=SIM_TIME, num_points=NUM_POINTS,
   # Create true values
   data = runSimulation(sim_time=sim_time, num_points=num_points,
       **kwargs)
-  num_cols = len(data.colnames) - 1
+  num_cols = len(data.colnames)
   # Add randomness
   for i in range (num_points):
     for j in range(1, num_cols):

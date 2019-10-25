@@ -128,7 +128,7 @@ def testFit():
 def testCrossValidate():
   obs_data = model_fitting.makeObservations(
       parameters=TEST_PARAMETERS)
-  results_parameters, results_rsq = model_fitting.crossValidate(
+  results_parameters, results_rsqs = model_fitting.crossValidate(
       obs_data)
   parameters_avg = model_fitting.makeAverageParameters(
       results_parameters)
