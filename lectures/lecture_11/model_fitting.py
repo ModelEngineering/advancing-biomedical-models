@@ -1,1 +1,1 @@
-../lecture_10/model_fitting.py
+../common_python/common_python/tellurium/model_fitting.py

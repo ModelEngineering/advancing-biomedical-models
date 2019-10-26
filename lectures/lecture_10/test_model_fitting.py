@@ -149,8 +149,18 @@ def testCrossValidate2():
   for name in params_dict.keys():
     assert(np.abs(params_dict[name]  \
     - TEST_PARAMETERS.valuesdict()[name]) < 2*params_dict[name])
+
+def testMakeResidualsBySPecies():
+  num_points = 20
+  obs_data = model_fitting.makeObservations(
+      parameters=TEST_PARAMETERS, num_points=num_points)
+  residual_matrix = model_fitting.makeResidualsBySpecies(
+      obs_data, parameters=TEST_PARAMETERS, num_points=num_points)
+  import pdb; pdb.set_trace()
+  
   
 if __name__ == '__main__':
+  testMakeResidualsBySPecies()
   if True:
     testReshapeData() 
     testArrayDifference() 
