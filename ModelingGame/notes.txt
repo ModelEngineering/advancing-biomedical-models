@@ -1,0 +1,7 @@
+.  The initial-Antimony-model.txt file has a parameter, 'K3_6', which is not involved in any of the reactions - you can remove that parameter (it should have been removed). I uploaded a new file on Canvas for this.
+
+2. You can assume that the double repression or double activation regulations are OR gates as previously mentioned, where either or, or both,  can enact the corresponding regulation. These should have a parameter 'K3_ ' involved in the rate law. We will assume this indicates that the binding of the second species to the promoter is not independent of the first species being bound. 
+
+3. The original experiment-price-list.pdf file was not consistent with the data being generated. This has been updated to show that the time-course data should cover 20 hours (1200 minutes). 
+
+4. After reviewing the "current knowledge" Antimony script for the Modeling Game model - it seems for double activation or double repression, OR gate logic, which allows either species alone or both species together, is used.

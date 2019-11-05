@@ -1,4 +1,4 @@
-// Created by libAntimony v2.9.4
+// Created by libAntimony v3.9.4
 model *pathway()
 
   // Compartments and Species:
