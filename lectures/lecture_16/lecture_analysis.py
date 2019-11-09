@@ -119,7 +119,14 @@ def makeParameters(constants):
     if len(pfxs) != 1:
         raise ValueError("Cannot find match for %s" % constant)
     pfx = pfxs[0]
-    min_val, max_val = ranges_dict[pfx]
+    is_keyerror = False
+    try:
+      min_val, max_val = ranges_dict[pfx]
+    except KeyError:
+      is_keyerror = True
+    if is_keyerror:
+      raise ValueError("No value range defined for parameter type %s"
+          % pfx)
     initial_val = (min_val + max_val) / 2
     parameters.add(constant, value=initial_val, min=min_val, max=max_val)
   return parameters
