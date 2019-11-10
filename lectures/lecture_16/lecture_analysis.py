@@ -42,12 +42,8 @@ def cleanColumns(df_data, is_force_time=False):
       df.index = times
   return df
 
-def simulate(model, start_time=START_TIME, end_time=END_TIME, num_points=NUM_POINTS,
-    is_mrna=True, is_protein=True, is_input=False):
+def makeDF(named_array, is_mrna=True, is_protein=True, is_input=False):
   """
-  Runs a simulation for the modeling game. Allows for selection
-  of the desired outputs.
-  :param str model:
   :param bool is_mrna: include mRNA in output
   :param bool is_protein: include proteins in output
   :param bool is_input: include input in output
@@ -58,10 +54,8 @@ def simulate(model, start_time=START_TIME, end_time=END_TIME, num_points=NUM_POI
       if col[:len(string)] == string:
         del df[col]
   #
-  rr = te.loada(model)
-  data = rr.simulate(start_time, end_time, num_points)
-  df = pd.DataFrame(data)
-  df.columns = data.colnames
+  df = pd.DataFrame(named_array)
+  df.columns = named_array.colnames
   df = cleanColumns(df, is_force_time=True)
   #
   if not is_mrna:
@@ -71,6 +65,19 @@ def simulate(model, start_time=START_TIME, end_time=END_TIME, num_points=NUM_POI
   if not is_input:
     delColumn(df, "INPUT")
   return df
+
+def simulate(model, start_time=START_TIME, end_time=END_TIME, num_points=NUM_POINTS,
+    **kwargs):
+  """
+  Runs a simulation for the modeling game. Allows for selection
+  of the desired outputs.
+  :param str model:
+  :param dict kwargs: arguments for makeDF
+  :return pd.DataFrame: Dataframe with time as index
+  """
+  rr = te.loada(model)
+  data = rr.simulate(start_time, end_time, num_points)
+  return makeDF(data)
 
 def getRNASeq(csv_file):
   """
@@ -96,11 +103,12 @@ def makeResiduals(model, df, **kwargs):
   columns = set(df_sim.columns).intersection(df.columns)
   return df[columns] - df_sim[columns]
 
-def plotData(df_data, starttime=0, endtime=1200):
+def plotData(df_data, starttime=0, endtime=1200, title=""):
   last = int(endtime/TIME_TO_POINT)
-  indices = list(range(last))
-  plt.plot(df_data.index[0:last], df_data.loc[df_data.index[indices],:])
+  indices = df_data.index[0:last]
+  plt.plot(indices, df_data.loc[indices,:])
   plt.xlabel("Time")
+  plt.title(title)
   plt.legend(df_data.columns, loc="upper right")
 
 def makeParameters(constants):
