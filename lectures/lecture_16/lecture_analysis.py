@@ -119,8 +119,15 @@ def makeParameters(constants):
   if isinstance(constants, str):
       constants = [constants]
   # mins and maxs for parameters by their initial string (up to a number)
-  ranges_dict = {"Vm": (0.5, 2), "K": (0.01, 0.03), "H": (2, 8), 
-                 "d_protein": (0.01, 0.03), "d_mRNA": (0.5, 2) }
+  ranges_dict = {
+      "Vm": (0.5, 2), 
+      "K": (0.01, 0.03), 
+      "L": (0.01, 0.03), 
+      "H": (2, 8), 
+      "a_protein": (0.05, 0.15), 
+      "d_protein": (0.01, 0.03), 
+      "d_mRNA": (0.5, 2)
+      }
   parameters = lmfit.Parameters()
   for constant in constants:
     pfxs = re.findall(r"^\D+", constant)
