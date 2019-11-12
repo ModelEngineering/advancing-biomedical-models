@@ -15,6 +15,9 @@ import random
 import tellurium as te
 
 TIME = "time"
+ME_LEASTSQ = "leastsq"
+ME_DIFFERENTIAL_EVOLUTION = "differential_evolution"
+ME_BOTH = "both"
 
 # data - named_array result
 # road_runner - road_runner instance created
@@ -364,8 +367,7 @@ def calcSimulationResiduals(obs_data, parameters,
 # TODO: Fix handling of obs_data columns. May not be
 #       a named array, as in bootstrap.
 def fit(obs_data, indices=None, parameters=PARAMETERS, 
-    method='leastsq',
-    **kwargs):
+    method=ME_LEASTSQ, **kwargs):
   """
   Does a fit of the model to the observations.
   :param ndarray obs_data: matrix of observed values with time
@@ -373,7 +375,8 @@ def fit(obs_data, indices=None, parameters=PARAMETERS,
          pd.DataFrame    : time is index
   :param list-int indices: indices on which fit is performed
   :param lmfit.Parameters parameters: parameters fit
-  :param str method: optimization method
+  :param str method: optimization method; both means
+                     differential_evolution followed by leastsq
   :param dict kwargs: optional parameters passed to runSimulation
   :return lmfit.Parameters:
   """
@@ -386,10 +389,20 @@ def fit(obs_data, indices=None, parameters=PARAMETERS,
     road_runner = residual_calculation.road_runner
     return residual_calculation.residuals
   #
-  # Estimate the parameters for this fold
-  fitter = lmfit.Minimizer(calcLmfitResiduals, parameters)
-  fitter_result = fitter.minimize(method=method)
-  return fitter_result.params
+  def estimateParameters(method, parameters):
+    # Estimate the parameters for this fold
+    fitter = lmfit.Minimizer(calcLmfitResiduals, parameters)
+    fitter_result = fitter.minimize(method=method)
+    return fitter_result.params
+  #
+  if method == ME_BOTH:
+    parameters = estimateParameters(ME_DIFFERENTIAL_EVOLUTION,
+        parameters)
+    return estimateParameters(ME_LEASTSQ, parameters)
+  else:
+    return estimateParameters(method, parameters)
+
+  
 
 def crossValidate(obs_data, method=DF_METHOD,
     sim_time=SIM_TIME,
