@@ -18,6 +18,8 @@ TIME = "time"
 ME_LEASTSQ = "leastsq"
 ME_DIFFERENTIAL_EVOLUTION = "differential_evolution"
 ME_BOTH = "both"
+PER05 = 0.05
+PER95 = 0.95
 
 # data - named_array result
 # road_runner - road_runner instance created
@@ -25,6 +27,7 @@ SimulationResult = namedtuple("SimulationResult",
     "data road_runner")
 ResidualCalculation = namedtuple("ResidualCalculation",
     "residuals road_runner")
+Statistic = namedtuple("Statistic", "mean std ci_low ci_high")
 
 ############## CONSTANTS ######################
 # Default simulation model
@@ -56,27 +59,41 @@ DF_METHOD = "least_squares"
 
 
 ############## FUNCTIONS ######################
-def matrixToDF(matrix, columns=None):
+def matrixToDF(matrix, columns=None, index=None):
   """
-  Converts an array to a dataframe.
+  Converts an array to a dataframe. If the index is
+  time, then rounds to a tenth.
   :param np.arrayy matrix:
          pd.DataFrame    : already converted
+  :param list index: index for dataframe
   :return pd.DataFrame: Columns are variables w/o [, ].
                         index is time.
   """
+  def setColumns(columns):
+    new_columns = [c.replace("[", "") for c in columns]
+    new_columns = [c.replace("]", "") for c in new_columns]
+    new_columns[0] = TIME
+    return new_columns
+  #
   if isinstance(matrix, pd.DataFrame):
     return matrix
   df = pd.DataFrame(matrix)
-  try:
-    # Assign column names if present
-    columns = [c[1:-1] for c in matrix.colnames]
-    columns[0] = TIME
-  except:
-    pass
+  if columns is not None:
+    columns = setColumns(columns)
+  else:
+    try:
+      columns = setColumns(matrix.colnames)
+    except:
+      pass
   if columns is not None:
     df.columns = columns
   if TIME in df.columns:
     df = df.set_index(TIME)
+  if index is not None:
+    df.index = index
+  if df.index.name == TIME:
+    df.index = [np.round(v, 1) for v in df.index]
+    df.index.name = TIME
   return df
 
 def matrixToDFWithoutTime(matrix, columns=None):
@@ -356,10 +373,7 @@ def calcSimulationResiduals(obs_data, parameters,
   df_obs, df_sim = makeDFWithCommonColumns(df_obs, df_sim)
   arr_obs = makeArrayFromMatrix(df_obs, indices)
   arr_sim = makeArrayFromMatrix(df_sim, indices)
-  try:
-    residuals = arr_obs - arr_sim
-  except:
-    import pdb; pdb.set_trace()
+  residuals = arr_obs - arr_sim
   residual_calculation = ResidualCalculation(residuals=residuals,
       road_runner=simulation_result.road_runner)
   return residual_calculation
@@ -475,18 +489,26 @@ def makeSyntheticObservations(residual_matrix, **kwargs):
   Constructs synthetic observations for the model.
   :param np.array residual_matrix: matrix of residuals; columns are species; number of rows is num_points
   :param dict kwargs: optional arguments to runSimulation
-  :return np.array: matrix; first column is time
+  :return pd.DataFrame: index is time
   """
   simulation_result = runSimulation(**kwargs)
-  data = simulation_result.data.copy()
-  nrows, ncols = np.shape(data)
-  for icol in range(1, ncols):  # Avoid the time column
-    indices = np.random.randint(0, nrows, nrows)
-    for irow in range(nrows):
-      data[irow, icol] = max(data[irow, icol] + residual_matrix[indices[irow], icol-1], 0)
-  return data
+  df_data = matrixToDF(simulation_result.data)
+  df_res = pd.DataFrame(residual_matrix)
+  df_res.columns = df_data.columns
+  try:
+    df_res.index = df_data.index
+  except:
+    import pdb; pdb.set_trace()
+  nrows = len(df_data)
+  ncols = len(df_data.columns)
+  for col in df_data.columns:
+    for idx in df_data.index:
+      random_index = df_res.index[np.random.randint(0, nrows)]
+      df_data.loc[idx, col] = df_data.loc[idx, col]  \
+          + df_res.loc[random_index, col]
+  df_data = df_data.applymap(lambda v: max(v, 0))
+  return df_data
 
-# FIXME: Getting divide by 0
 def doBootstrapWithResiduals(residuals_matrix, 
     method=DF_METHOD, count=DF_BOOTSTRAP_COUNT, **kwargs):
   """
@@ -523,27 +545,35 @@ def doBootstrap(obs_data, model, parameters,
   return makeParameterStatistics(list_parameters,
       confidence_limits=confidence_limits)
 
+def calcStatistic(values, confidence_limits=[PER05, PER95]):
+  """
+  Calculates Statistic
+  :param list-float values:
+  :return Statistic:
+  """
+  quantiles = np.quantile(values, confidence_limits)
+  return Statistic(
+      mean  =np.mean(values),
+      std = np.std(values),
+      ci_low = quantiles[0],
+      ci_high = quantiles[1],
+      )
+
 def makeParameterStatistics(list_parameters,
     confidence_limits=DF_CONFIDENCE_INTERVAL):
   """
   Computes the mean and standard deviation of the parameters in a list of parameters.
   :param list-lmfit.Parameters
   :param (float, float) confidence_limits: if none, report mean and variance
-  :return dict: key is the parameter name; value is the tuple (mean, stddev) or confidence limits
+  :return dict: key is the parameter name; value is ParameterStatistic
   """
-  parameter_statistics = {}  # This is a dictionary that will have the parameter name as key, and mean, std as values
+  statistic_dict = {}
   parameter_names = list(list_parameters[0].valuesdict().keys())
   for name in parameter_names:
-    parameter_statistics[name] = []  # We will accumulate values in this list
+    statistic_dict[name] = []
     for parameters in list_parameters:
-      parameter_statistics[name].append(parameters.valuesdict()[name])
+      statistic_dict[name].append(parameters.valuesdict()[name])
   # Calculate the statistics
-  for name in parameter_statistics.keys():
-    if confidence_limits is not None:
-      parameter_statistics[name] = np.percentile(parameter_statistics[name], confidence_limits)
-    else:
-      mean = np.mean(parameter_statistics[name])
-      std = np.std(parameter_statistics[name])
-      std = std/np.sqrt(len(list_parameters))  # adjustments for the standard deviation of the mean
-      parameter_statistics[name] = (mean, std)
-  return parameter_statistics
+  for name in statistic_dict.keys():
+    statistic_dict[name] = calcStatistic(statistic_dict[name])
+  return statistic_dict
