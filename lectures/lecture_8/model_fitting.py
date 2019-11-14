@@ -20,6 +20,7 @@ ME_DIFFERENTIAL_EVOLUTION = "differential_evolution"
 ME_BOTH = "both"
 PER05 = 0.05
 PER95 = 0.95
+TIME_INTERVAL = 10
 
 # data - named_array result
 # road_runner - road_runner instance created
@@ -59,6 +60,29 @@ DF_METHOD = "least_squares"
 
 
 ############## FUNCTIONS ######################
+def cleanColumns(df_data, is_force_time=True):
+  """
+  Cleans the column names in the dataframe,
+  removing "[", "]". Makes time index.
+  :param pd.DataFrame df_data: Simulation data output.
+  :param bool is_force_time: force time to factors of 10
+  """
+  df = df_data.copy()
+  columns = []
+  for col in df_data.columns:
+    new_col = str(col)
+    new_col = new_col.replace("[", "")
+    new_col = new_col.replace("]", "")
+    columns.append(new_col)
+  df.columns = columns
+  if TIME in df.columns:
+    df = df.set_index(TIME)
+  if df.index.name == TIME:
+    if is_force_time:
+      df.index = [float(v*TIME_INTERVAL) for v in range(len(df))]
+      df.index.name = TIME
+  return df
+
 def matrixToDF(matrix, columns=None, index=None):
   """
   Converts an array to a dataframe. If the index is
@@ -69,32 +93,18 @@ def matrixToDF(matrix, columns=None, index=None):
   :return pd.DataFrame: Columns are variables w/o [, ].
                         index is time.
   """
-  def setColumns(columns):
-    new_columns = [c.replace("[", "") for c in columns]
-    new_columns = [c.replace("]", "") for c in new_columns]
-    new_columns[0] = TIME
-    return new_columns
-  #
   if isinstance(matrix, pd.DataFrame):
-    return matrix
-  df = pd.DataFrame(matrix)
-  if columns is not None:
-    columns = setColumns(columns)
+    df = cleanColumns(matrix)
   else:
-    try:
-      columns = setColumns(matrix.colnames)
-    except:
-      pass
+    df = pd.DataFrame(matrix)
+    if columns is None:
+      try:
+        columns = matrix.colnames
+      except:
+        pass
   if columns is not None:
     df.columns = columns
-  if TIME in df.columns:
-    df = df.set_index(TIME)
-  if index is not None:
-    df.index = index
-  if df.index.name == TIME:
-    df.index = [np.round(v, 1) for v in df.index]
-    df.index.name = TIME
-  return df
+  return cleanColumns(df)
 
 def matrixToDFWithoutTime(matrix, columns=None):
   """
@@ -333,7 +343,7 @@ def makeObservations(sim_time=SIM_TIME, num_points=NUM_POINTS,
   :param int num_points: number of timepoints simulated
   :param float noise_std: Standard deviation for random noise
   :param dict kwargs: keyword parameters used by runSimulation
-  :return namedarray: simulation results with randomness
+  :return pd.DataFrame: simulation results with randomness
   """
   # Create true values
   simulation_result = runSimulation(sim_time=sim_time,
@@ -346,7 +356,7 @@ def makeObservations(sim_time=SIM_TIME, num_points=NUM_POINTS,
     for j in range(1, num_cols):
       data[i, j] = max(data[i, j]  \
           + np.random.normal(0, noise_std, 1), 0)
-  return data
+  return matrixToDF(data)
 
 def calcSimulationResiduals(obs_data, parameters,
     indices=None, **kwargs):
@@ -463,42 +473,43 @@ def crossValidate(obs_data, method=DF_METHOD,
     result_rsqs.append(rsq)
   return result_parameters, result_rsqs
 
-def makeResidualsMatrix(obs_data, model, parameters,
+def makeResidualDF(obs_data, model, parameters,
     road_runner=ROAD_RUNNER,
     **kwargs):
   """
   Calculate residuals for each chemical species.
-  :param np.array obs_data: matrix of observations; first column is time; number of rows is num_points
+  :param named_array/pd.DataFrame obs_data: matrix of observations; first column is time; number of rows is num_points
   :param lmfit.Parameters parameters:
   :param dict kwargs: optional arguments to runSimulation
-  :return np.array: matrix of residuals; columns are chemical species
+  :return pd.DataFrame: matrix of residuals; columns are chemical species
   """
-  residual_calculation = calcSimulationResiduals(obs_data, parameters,
+  df_obs = matrixToDF(obs_data)
+  if df_obs.index.name != TIME:
+    import pdb; pdb.set_trace()
+    raise ValueError("Invalid observational data")
+  residual_calculation = calcSimulationResiduals(df_obs, parameters,
       model=model, road_runner=road_runner, **kwargs)
   road_runnder = residual_calculation.road_runner
   residuals = residual_calculation.residuals
   # Reshape the residuals by species
-  rr = te.loada(model)
-  num_species = rr.getNumFloatingSpecies()
+  num_species = len(df_obs.columns)
   nrows = int(len(residuals) / num_species)
   result = np.reshape(residuals, (nrows, num_species))
-  return result
+  df_res = pd.DataFrame(result)
+  df_res.columns = df_obs.columns
+  return df_res
 
-def makeSyntheticObservations(residual_matrix, **kwargs):
+def makeSyntheticObservations(df_res, **kwargs):
   """
   Constructs synthetic observations for the model.
-  :param np.array residual_matrix: matrix of residuals; columns are species; number of rows is num_points
+  :param pd.DataFrame df_res: matrix of residuals; columns are species; number of rows is num_points
   :param dict kwargs: optional arguments to runSimulation
   :return pd.DataFrame: index is time
   """
   simulation_result = runSimulation(**kwargs)
   df_data = matrixToDF(simulation_result.data)
-  df_res = pd.DataFrame(residual_matrix)
+  df_data, df_res = makeDFWithCommonColumns(df_data, df_res)
   df_res.columns = df_data.columns
-  try:
-    df_res.index = df_data.index
-  except:
-    import pdb; pdb.set_trace()
   nrows = len(df_data)
   ncols = len(df_data.columns)
   for col in df_data.columns:
@@ -509,37 +520,37 @@ def makeSyntheticObservations(residual_matrix, **kwargs):
   df_data = df_data.applymap(lambda v: max(v, 0))
   return df_data
 
-def doBootstrapWithResiduals(residuals_matrix, 
+def doBootstrapWithResiduals(df_res,
     method=DF_METHOD, count=DF_BOOTSTRAP_COUNT, **kwargs):
   """
   Performs bootstrapping by repeatedly generating synthetic observations.
-  :param np.array residuals_matrix: no time col
+  :param pd.DataFrame residuals_matrix:
   :param int count: number of iterations in bootstrap
   :param dict kwargs: optional arguments to runSimulation
   """
   list_parameters = []
   for _ in range(count):
-      obs_data = makeSyntheticObservations(residuals_matrix, **kwargs)
-      parameters = fit(obs_data, method=method, **kwargs)
+      df_data = makeSyntheticObservations(df_res, **kwargs)
+      parameters = fit(df_data, method=method, **kwargs)
       list_parameters.append(parameters)
   return list_parameters
 
-def doBootstrap(obs_data, model, parameters, 
+def doBootstrap(df_data, model, parameters, 
     method=DF_METHOD, count=DF_BOOTSTRAP_COUNT,
     confidence_limits=DF_CONFIDENCE_INTERVAL, **kwargs):
   """
   Performs bootstrapping by repeatedly generating synthetic observations,
   calculating the residuals as well.
-  :param array obs_data: matrix of data, first col is time.
+  :param pd.DataFrame df_data: index is time
   :param str model:
   :param lmfit.Parameters parameters:
   :param int count: number of iterations in bootstrap
   :param dict kwargs: optional arguments to runSimulation
   :return dict: confidence limits
   """
-  residual_matrix = makeResidualsMatrix(obs_data, model,
+  df_res = makeResidualDF(df_data, model,
       parameters, **kwargs)
-  list_parameters = doBootstrapWithResiduals(residual_matrix,
+  list_parameters = doBootstrapWithResiduals(df_res,
       method=method,
       count=count, model=model, parameters=parameters, **kwargs)
   return makeParameterStatistics(list_parameters,
