@@ -15,8 +15,6 @@ model *pathway()
   J7:  => mRNA7; L7 - d_mRNA7*mRNA7;
   J8:  => mRNA8; L8 + Vm8*(1/(1 + K1_8*P1^H8)) - d_mRNA8*mRNA8;
 
-// New constants
-  
 // Protein Reactions:
   F1:  => P1; a_protein1*mRNA1 - d_protein1*P1;
   F2:  => P2; a_protein2*mRNA2 - d_protein2*P2;
