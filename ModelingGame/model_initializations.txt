@@ -1,0 +1,1 @@
+../lectures/common_python/common_python/tellurium/model_initializations.txt
