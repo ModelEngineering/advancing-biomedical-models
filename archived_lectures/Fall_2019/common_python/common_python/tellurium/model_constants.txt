@@ -1,0 +1,10 @@
+
+  // Other declarations:
+  const d_protein1, d_mRNA1, L1, Vm1, a_protein1, H1, K1_1, K2_1, K3_1, d_protein2;
+  const d_mRNA2, L2, Vm2, a_protein2, H2, K1_2, d_protein3, d_mRNA3;
+  const L3, Vm3, a_protein3, H3, K1_3, d_protein4, d_mRNA4, L4;
+  const Vm4, a_protein4, H4, K1_4, d_protein5, d_mRNA5, L5;
+  const a_protein5, d_protein6, d_mRNA6, L6, Vm6, a_protein6;
+  const H6, K1_6, K2_6, d_protein7, d_mRNA7, L7, a_protein7;
+  const d_protein8, d_mRNA8, L8, Vm8, a_protein8, H8, K1_8;
+end

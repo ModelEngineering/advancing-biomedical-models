@@ -1,0 +1,7 @@
+
+// Created by libAntimony v3.9.4
+model *pathway()
+
+  // Compartments and Species:
+  species INPUT, P1, mRNA1, P2, mRNA2, P3, mRNA3, P4, mRNA4, P5, mRNA5, P6;
+  species mRNA6, P7, mRNA7, P8, mRNA8;

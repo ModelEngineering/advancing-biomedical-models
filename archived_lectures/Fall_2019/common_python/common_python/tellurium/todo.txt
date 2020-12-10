@@ -1,0 +1,14 @@
+Feature - precompute protein concentrations
+1. Constructor has argument for file path of mRNA data,
+   reads it, and initializes self._df_protein
+2. makeProteinConcentrations
+   check for presents of _protein.csv file in same path as
+       mRNA file
+   if not present, calculate protein concentrations and save
+       to file
+3. initializeODScope
+   create self.protein_name
+   initialize values of proteins that aren't protein_name
+   protein_kinetics_compiled - single entry for the associated protein
+4. calcMrnaEstimates
+   only 2 values in state vector

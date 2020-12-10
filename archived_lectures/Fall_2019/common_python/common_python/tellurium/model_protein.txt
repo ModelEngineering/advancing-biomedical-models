@@ -1,0 +1,11 @@
+
+  
+// Protein Reactions:
+  F1:  => P1; a_protein1*mRNA1 - d_protein1*P1;
+  F2:  => P2; a_protein2*mRNA2 - d_protein2*P2;
+  F3:  => P3; a_protein3*mRNA3 - d_protein3*P3;
+  F4:  => P4; a_protein4*mRNA4 - d_protein4*P4;
+  F5:  => P5; a_protein5*mRNA5 - d_protein5*P5;
+  F6:  => P6; a_protein6*mRNA6 - d_protein6*P6;
+  F7:  => P7; a_protein7*mRNA7 - d_protein7*P7;
+  F8:  => P8; a_protein8*mRNA8 - d_protein8*P8;
