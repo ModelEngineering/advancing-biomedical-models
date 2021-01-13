@@ -57,7 +57,6 @@ def runExperimentsTwoParameters(parameter1, parameter2, percent1s, percent2s,
         index2 = []
         for percent1 in percent1s:
             for percent2 in percent2s:
-                #indices.append("%d_%d" % (percent1, percent2))
                 index1.append(percent1)
                 index2.append(percent2)
                 parameterDct = {parameter1: percent1, parameter2: percent2}
