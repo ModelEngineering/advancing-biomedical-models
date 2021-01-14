@@ -13,7 +13,7 @@ import wolf_model as wm
 def runExperimentsTwoParameters(parameter1, parameter2, percent1s, percent2s,
       isRelative=True):
     """
-    Runs experiments for changes in multipleparameters of the model at
+    Runs experiments for changes in multipleparameters of the model at 
     different percent changes in the parameter value (levels).
     
     Parameter
@@ -39,7 +39,22 @@ def runExperimentsTwoParameters(parameter1, parameter2, percent1s, percent2s,
     # Calculate the baseline values
     baseFrequencySer, baseAmplitudeSer = util_doe1.runExperiment({})
     #
-    def calc(ser, isFrequency=True):
+    def calcResponseSer(ser, isFrequency=True):
+        """
+        Calculates the relative response.
+        
+        Parameters
+        ----------
+        ser: pd.Series
+            index: molecule
+            value: absolute respoinse
+        isFrequency: bool
+            if True, frequency response; else, amplitude response
+
+        Returns
+        -------
+        pd.Series
+        """
         if not isRelative:
             return ser
         if isFrequency:
@@ -49,7 +64,24 @@ def runExperimentsTwoParameters(parameter1, parameter2, percent1s, percent2s,
         resultSer = 100*(ser - baseSer)/baseSer
         return resultSer
     #
-    def iterateLevels(isFrequency=None):
+    def calcLevelDF(isFrequency=None):
+        """
+        Calculates the dataframe of levels dataframe.
+        
+        Parameter
+        --------
+        isFrequency: bool
+            If True, frequency response. Otherwise, amplitude response
+            
+        Returns
+        -------
+        pd.DataFrame
+            index: tuple-int
+                levels of parameters
+            columns: str
+                molecule
+            values: response
+        """
         if isFrequency is None:
             raise ValueError("Must specify isFrequency!")
         sers = []  # Collection of experiment results
@@ -57,6 +89,7 @@ def runExperimentsTwoParameters(parameter1, parameter2, percent1s, percent2s,
         index2 = []
         for percent1 in percent1s:
             for percent2 in percent2s:
+                #indices.append("%d_%d" % (percent1, percent2))
                 index1.append(percent1)
                 index2.append(percent2)
                 parameterDct = {parameter1: percent1, parameter2: percent2}
@@ -65,7 +98,7 @@ def runExperimentsTwoParameters(parameter1, parameter2, percent1s, percent2s,
                     ser = frequencySer
                 else:
                     ser = amplitudeSer
-                adjSer = calc(ser, isFrequency=isFrequency)
+                adjSer = calcResponseSer(ser, isFrequency=isFrequency)
                 sers.append(pd.DataFrame(adjSer).transpose())
         resultDF = pd.concat(sers)
         resultDF[INDEX1] = index1
@@ -76,8 +109,8 @@ def runExperimentsTwoParameters(parameter1, parameter2, percent1s, percent2s,
         resultDF.index.name = str((parameter1, parameter2))
         return resultDF
     #
-    frequencyDF = iterateLevels(isFrequency=True)
-    amplitudeDF = iterateLevels(isFrequency=False)
+    frequencyDF = calcLevelDF(isFrequency=True)
+    amplitudeDF = calcLevelDF(isFrequency=False)
     return frequencyDF, amplitudeDF
 
 def pivotResponse(responseDF, molecule):
