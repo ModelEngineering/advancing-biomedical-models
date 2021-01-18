@@ -46,9 +46,9 @@ CONSTANTS = ['k1', 'k2']
 NOISE_STD = 0.5
 NUM_POINTS = 10
 KWARGS_NUM_POINTS = "num_points"
-PARAMETERS = lmfit.Parameters()
-PARAMETERS.add('k1', value=1, min=0, max=10)
-PARAMETERS.add('k2', value=1, min=0, max=10)
+PARAMETER_ESTIMATES = lmfit.Parameters()
+PARAMETER_ESTIMATES.add('k1', value=1, min=0, max=10)
+PARAMETER_ESTIMATES.add('k2', value=1, min=0, max=10)
 ROAD_RUNNER = None
 SIM_TIME = 30
 
@@ -214,11 +214,11 @@ def makeParameters(constants=CONSTANTS, values=1, mins=0, maxs=10):
   values = makeList(values, len(constants))
   mins = makeList(mins, len(constants))
   maxs = makeList(maxs, len(constants))
-  parameters = lmfit.Parameters()
+  parameter_estimates = lmfit.Parameters()
   for idx, constant in enumerate(constants):
-    parameters.add(constant,
+    parameter_estimates.add(constant,
         value=values[idx], min=mins[idx], max=maxs[idx])
-  return parameters
+  return parameter_estimates
 
 def makeAverageParameters(list_parameters):
   """
@@ -232,10 +232,10 @@ def makeAverageParameters(list_parameters):
     values = []
     mins = []
     maxs = []
-    for parameters in list_parameters:
-      values.append(parameters.valuesdict()[name])
-      mins.append(parameters.get(name).min)
-      maxs.append(parameters.get(name).max)
+    for parameter_estimate in list_parameters:
+      values.append(parameter_estimate.valuesdict()[name])
+      mins.append(parameter_estimate.get(name).min)
+      maxs.append(parameter_estimate.get(name).max)
     value = np.mean(values)
     min_val = min(mins)
     max_val = min(maxs)
@@ -244,22 +244,22 @@ def makeAverageParameters(list_parameters):
   return result_parameters
 
 def runSimulation(sim_time=SIM_TIME, 
-    num_points=NUM_POINTS, road_runner=ROAD_RUNNER, parameters=None,
+    num_points=NUM_POINTS, road_runner=ROAD_RUNNER, parameter_estimates=None,
     **kwargs):
   """
   Runs the simulation model rr for the parameters.
   :param int sim_time: time to run the simulation
   :param int num_points: number of timepoints simulated
   :param ExtendedRoadRunner road_runner:
-  :param lmfit.Parameters parameters:
+  :param lmfit.Parameters parameter_estimates:
   :param dict kwargs: parameters used in makeSimulation
   :return SimulationResult:
   """
   if road_runner is None:
-    road_runner = makeSimulation(parameters=parameters, **kwargs)
+    road_runner = makeSimulation(parameter_estimates=parameter_estimates, **kwargs)
   else:
     road_runner.reset()
-    setSimulationParameters(road_runner, parameters)
+    setSimulationParameters(road_runner, parameter_estimates)
   data = road_runner.simulate (0, sim_time, num_points)
   df =cleanColumns(pd.DataFrame(data, columns=data.colnames))
   simulation_result = SimulationResult(
@@ -269,14 +269,14 @@ def runSimulation(sim_time=SIM_TIME,
       )
   return simulation_result
 
-def setSimulationParameters(road_runner, parameters=None):
+def setSimulationParameters(road_runner, parameter_estimates=None):
   """
   Sets parameter values in a road runner instance.
   :param ExtendedRoadRunner road_runner:
-  :param lmfit.Parameters parameters:
+  :param lmfit.Parameters parameter_estimates:
   """
-  if parameters is not None:
-    parameter_dict = parameters.valuesdict()
+  if parameter_estimates is not None:
+    parameter_dict = parameter_estimates.valuesdict()
     # Set the simulation constants for all parameters
     for constant in parameter_dict.keys():
       stmt = "road_runner.%s = float(parameter_dict['%s'])" % (
@@ -286,15 +286,15 @@ def setSimulationParameters(road_runner, parameters=None):
       except:
         import pdb; pdb.set_trace()
 
-def makeSimulation(parameters=None, model=MODEL):
+def makeSimulation(parameter_estimates=None, model=MODEL):
   """
   Creates an road runner instance for the simulation.
-  :param lmfit.Parameters parameters:
+  :param lmfit.Parameters parameter_estimates:
   :param str model:
   :return ExtendedRoadRunner:
   """
   road_runner = te.loada(model)
-  setSimulationParameters(road_runner, parameters)
+  setSimulationParameters(road_runner, parameter_estimates)
   return road_runner
 
 def plotTimeSeries(data, is_scatter=False, title="", 
@@ -367,14 +367,14 @@ def makeObservations(sim_time=SIM_TIME, num_points=NUM_POINTS,
           + np.random.normal(0, noise_std, 1), 0)
   return matrixToDF(data)
 
-def calcSimulationResiduals(obs_data, parameters,
+def calcSimulationResiduals(obs_data, parameter_estimates,
     indices=None, **kwargs):
   """
   Runs a simulation with the specified parameters and calculates residuals
   for the train_indices.
   :param array obs_data: matrix of data, first col is time.
          pd.DataFrame  : index is time
-  :param lmfit.Parameters parameters:
+  :param lmfit.Parameters parameter_estimates:
   :param list-int indices: indices for which calculation is done
                            if None, then all.
   :param dict kwargs: optional parameters passed to simulation
@@ -385,7 +385,7 @@ def calcSimulationResiduals(obs_data, parameters,
     indices = range(len(df_obs))
   if not KWARGS_NUM_POINTS in kwargs.keys():
     kwargs[KWARGS_NUM_POINTS] = len(df_obs)
-  simulation_result = runSimulation(parameters=parameters,
+  simulation_result = runSimulation(parameter_estimates=parameter_estimates,
       **kwargs)
   df_sim = matrixToDFWithoutTime(simulation_result.data)
   # Compute differences
@@ -399,7 +399,7 @@ def calcSimulationResiduals(obs_data, parameters,
 
 # TODO: Fix handling of obs_data columns. May not be
 #       a named array, as in bootstrap.
-def fit(obs_data, indices=None, parameters=PARAMETERS, 
+def fit(obs_data, indices=None, parameter_estimates=PARAMETER_ESTIMATES, 
     method=ME_LEASTSQ, **kwargs):
   """
   Does a fit of the model to the observations.
@@ -407,7 +407,7 @@ def fit(obs_data, indices=None, parameters=PARAMETERS,
                            as the first column
          pd.DataFrame    : time is index
   :param list-int indices: indices on which fit is performed
-  :param lmfit.Parameters parameters: parameters fit
+  :param lmfit.Parameters parameter_estimates: parameters fit
   :param str method: optimization method; both means
                      differential_evolution followed by leastsq
   :param dict kwargs: optional parameters passed to runSimulation
@@ -415,29 +415,29 @@ def fit(obs_data, indices=None, parameters=PARAMETERS,
   """
   global road_runner
   road_runner = ROAD_RUNNER
-  def calcLmfitResiduals(parameters):
+  def calcLmfitResiduals(parameter_estimates):
     global road_runner
     residual_calculation = calcSimulationResiduals(obs_data,
-        parameters, indices, road_runner=road_runner, **kwargs)
+        parameter_estimates, indices, road_runner=road_runner, **kwargs)
     road_runner = residual_calculation.road_runner
     return residual_calculation.residuals
   #
-  def estimateParameters(method, parameters):
+  def estimateParameters(method, parameter_estimates):
     # Estimate the parameters for this fold
-    fitter = lmfit.Minimizer(calcLmfitResiduals, parameters)
+    fitter = lmfit.Minimizer(calcLmfitResiduals, parameter_estimates)
     fitter_result = fitter.minimize(method=method)
     return fitter_result.params
   #
   if method == ME_BOTH:
-    parameters = estimateParameters(ME_DIFFERENTIAL_EVOLUTION,
-        parameters)
-    return estimateParameters(ME_LEASTSQ, parameters)
+    parameter_estimates = estimateParameters(ME_DIFFERENTIAL_EVOLUTION,
+        parameter_estimates)
+    return estimateParameters(ME_LEASTSQ, parameter_estimates)
   else:
-    return estimateParameters(method, parameters)
+    return estimateParameters(method, parameter_estimates)
 
 def crossValidate(obs_data, method=DF_METHOD,
     sim_time=SIM_TIME,
-    num_points=None, parameters=PARAMETERS,
+    num_points=None, parameter_estimates=PARAMETER_ESTIMATES,
     num_folds=3, **kwargs):
   """
   Performs cross validation on an antimony model.
@@ -448,7 +448,7 @@ def crossValidate(obs_data, method=DF_METHOD,
         pd.DataFrame    : time is index
   :param int sim_time: length of simulation run
   :param int num_points: number of time points produced.
-  :param lmfit.Parameters: parameters to be estimated
+  :param lmfit.Parameters: parameter_estimates to be estimated
   :param dict kwargs: optional arguments used in simulation
   :return list-lmfit.Parameters, list-float: parameters and RSQ from folds
   """
@@ -462,9 +462,9 @@ def crossValidate(obs_data, method=DF_METHOD,
   road_runner = ROAD_RUNNER
   for train_indices, test_indices in fold_generator:
     # This function is defined inside the loop because it references a loop variable
-    new_parameters = parameters.copy()
+    new_estimates = parameter_estimates.copy()
     fitted_parameters = fit(df_obs, method=method,
-      indices=train_indices, parameters=new_parameters,
+      indices=train_indices, parameter_estimates=new_estimates,
       sim_time=sim_time, num_points=num_points,
       **kwargs)
     result_parameters.append(fitted_parameters)
@@ -472,7 +472,7 @@ def crossValidate(obs_data, method=DF_METHOD,
     # the parameters estimated using the training data.
     simulation_result = runSimulation(road_runner=road_runner,
         sim_time=sim_time, num_points=num_points,
-        parameters=fitted_parameters, **kwargs)
+        parameter_estimates=fitted_parameters, **kwargs)
     road_runner = simulation_result.road_runner
     df_est = matrixToDF(simulation_result.data)
     # Calculate RSQ
@@ -480,7 +480,7 @@ def crossValidate(obs_data, method=DF_METHOD,
     result_rsqs.append(rsq)
   return result_parameters, result_rsqs
 
-def makeResidualsDF(obs_data, model, parameters,
+def makeResidualsDF(obs_data, model, parameter_estimates,
     road_runner=ROAD_RUNNER,
     **kwargs):
   """
@@ -494,7 +494,7 @@ def makeResidualsDF(obs_data, model, parameters,
   if df_obs.index.name != TIME:
     import pdb; pdb.set_trace()
     raise ValueError("Invalid observational data")
-  residual_calculation = calcSimulationResiduals(df_obs, parameters,
+  residual_calculation = calcSimulationResiduals(df_obs, parameter_estimates,
       model=model, road_runner=road_runner, **kwargs)
   road_runnder = residual_calculation.road_runner
   residuals = residual_calculation.residuals
@@ -538,11 +538,11 @@ def doBootstrapWithResiduals(df_res,
   list_parameters = []
   for _ in range(count):
       df_data = makeSyntheticObservations(df_res, **kwargs)
-      parameters = fit(df_data, method=method, **kwargs)
-      list_parameters.append(parameters)
+      parameter_estimates = fit(df_data, method=method, **kwargs)
+      list_parameters.append(parameter_estimates)
   return list_parameters
 
-def doBootstrap(df_data, model, parameters, 
+def doBootstrap(df_data, model, parameter_estimates, 
     method=DF_METHOD, count=DF_BOOTSTRAP_COUNT,
     confidence_limits=DF_CONFIDENCE_INTERVAL, **kwargs):
   """
@@ -550,16 +550,16 @@ def doBootstrap(df_data, model, parameters,
   calculating the residuals as well.
   :param pd.DataFrame df_data: index is time
   :param str model:
-  :param lmfit.Parameters parameters:
+  :param lmfit.Parameters parameter_estimates:
   :param int count: number of iterations in bootstrap
   :param dict kwargs: optional arguments to runSimulation
   :return dict: confidence limits
   """
   df_res = makeResidualsDF(df_data, model,
-      parameters, **kwargs)
+      parameter_estimates, **kwargs)
   list_parameters = doBootstrapWithResiduals(df_res,
       method=method,
-      count=count, model=model, parameters=parameters, **kwargs)
+      count=count, model=model, parameter_estimates=parameter_estimates, **kwargs)
   return makeParameterStatistics(list_parameters,
       confidence_limits=confidence_limits)
 
@@ -589,8 +589,8 @@ def makeParameterStatistics(list_parameters,
   parameter_names = list(list_parameters[0].valuesdict().keys())
   for name in parameter_names:
     statistic_dict[name] = []
-    for parameters in list_parameters:
-      statistic_dict[name].append(parameters.valuesdict()[name])
+    for parameter_estimates in list_parameters:
+      statistic_dict[name].append(parameter_estimates.valuesdict()[name])
   # Calculate the statistics
   for name in statistic_dict.keys():
     statistic_dict[name] = calcStatistic(statistic_dict[name])

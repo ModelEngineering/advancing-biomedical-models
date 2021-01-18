@@ -80,7 +80,7 @@ def testMakeAverageParameters():
 def testRunSimulation():
   simulation_result1 = mf.runSimulation() 
   assert(simulation_result1.data[-1, 0] == mf.SIM_TIME)
-  simulation_result2 = mf.runSimulation(parameters=TEST_PARAMETERS) 
+  simulation_result2 = mf.runSimulation(parameter_estimates=TEST_PARAMETERS) 
   nrows, ncols = np.shape(simulation_result1.data)
   for i in range(nrows):
     for j in range(ncols):
@@ -121,7 +121,7 @@ def testCalcSimulationResiduals():
     residuals = residual_calculation.residuals
     assert(sum(residuals*residuals) == 0)
   #
-  simulation_result = mf.runSimulation(parameters=TEST_PARAMETERS)
+  simulation_result = mf.runSimulation(parameter_estimates=TEST_PARAMETERS)
   matrix = simulation_result.data
   test(matrix)
   df = mf.matrixToDF(matrix)
@@ -132,7 +132,7 @@ def testFit():
   def test(method=mf.ME_LEASTSQ):
     parameters = mf.fit(obs_data, method=method)
     param_dict = dict(parameters.valuesdict())
-    expected_param_dict = dict(mf.PARAMETERS.valuesdict())
+    expected_param_dict = dict(mf.PARAMETER_ESTIMATES.valuesdict())
     diff = set(param_dict.keys()).symmetric_difference(
         expected_param_dict.keys())
     assert(len(diff) == 0)
@@ -161,7 +161,7 @@ def testCrossValidate():
 def testCrossValidate2():
   num_points = 20
   obs_data = mf.makeObservations(
-      parameters=TEST_PARAMETERS, num_points=num_points)
+      parameter_estimates=TEST_PARAMETERS, num_points=num_points)
   results_parameters, results_rsq = mf.crossValidate(
       obs_data, num_points=num_points, num_folds=10)
   parameters_avg = mf.makeAverageParameters(
@@ -206,7 +206,7 @@ def testDoBootstrapWithResiduals():
 
 def _getResiduals(num_points, model=mf.MODEL):
   df_obs = mf.makeObservations(model=model,
-      parameters=TEST_PARAMETERS, num_points=num_points)
+      parameter_estimates=TEST_PARAMETERS, num_points=num_points)
   return mf.makeResidualsDF(df_obs, model,
       TEST_PARAMETERS, num_points=num_points)
 
@@ -215,7 +215,7 @@ def testDoBootstrap():
   count = 3
   model = mf.MODEL
   df_obs = mf.makeObservations(model=model,
-      parameters=TEST_PARAMETERS, num_points=num_points)
+      parameter_estimates=TEST_PARAMETERS, num_points=num_points)
   statistic_dict = mf.doBootstrap(df_obs, model,
       TEST_PARAMETERS, count=count,
       num_points=num_points)
@@ -246,7 +246,7 @@ def testDoBootstrap2():
   df_full_obs = mf.makeObservations(model=model0, 
       noise_std=0.3, num_points=num_points, sim_time=sim_time)
   result = mf.doBootstrap(df_full_obs, 
-      model=model0, parameters=unfitted_parameters, 
+      model=model0, parameter_estimates=unfitted_parameters, 
       num_points=num_points, sim_time=sim_time, count=5)
  
 def testMakeParameterStatistics():
