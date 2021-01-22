@@ -9,6 +9,7 @@ from scipy import fftpack
 import tellurium as te
 import seaborn as sns
 import wolf_model as wm
+from SBstoat.namedTimeseries import NamedTimeseries, TIME
 
 
 ################## CONSTANTS #############################
@@ -17,10 +18,12 @@ FONTSIZE = 16
 FREQIDX = 0  # Index of frequency values
 TIME = "time"
 SMALLEST_PCT = -100  # Smallest percent change in a parameter value
+TIME_OFFSET = 100
 
 
 ###################### FUNCTIONS #####################
-def runSimulation(parameterDct, roadrunner=None, model=wm.WOLF_MODEL):
+def runSimulation(parameterDct, roadrunner=None, model=wm.WOLF_MODEL,
+      startTime=wm.START, endTime=wm.END, numPoint=wm.NUMPT):
     """
     Runs a simulation for parameters with percentage changes from baseline values.
 
@@ -30,6 +33,10 @@ def runSimulation(parameterDct, roadrunner=None, model=wm.WOLF_MODEL):
        key: parameter
        value: float
            percent change
+    roadrunner: ExtendedRoadRunner
+    startTime: float
+    endTime: float
+    numPoint: int
        
     Returns
     -------
@@ -43,7 +50,7 @@ def runSimulation(parameterDct, roadrunner=None, model=wm.WOLF_MODEL):
         baseValue = roadrunner[parameter]
         roadrunner[parameter] = baseValue*(1 + 0.01*percent)
     # Run the simulation
-    data = roadrunner.simulate(wm.START, wm.END, wm.NUMPT)
+    data = roadrunner.simulate(startTime, endTime, numPoint)
     return data
 
 def calculateFft(molecule, data, offset=100):
@@ -64,7 +71,10 @@ def calculateFft(molecule, data, offset=100):
         freqs, fftValues
     """
     # Returns frequencies and abs(fft) for a chemical species (molecule)
-    col = "[%s]" % molecule
+    if molecule in data.colnames:
+        col = molecule
+    else:
+        col = "[%s]" % molecule
     values = data[col]
     numPoint = len(data)
     count = numPoint - offset
@@ -76,14 +86,16 @@ def calculateFft(molecule, data, offset=100):
     fftValues = fftValues[1:]
     return freqs, fftValues
 
-def getFrequencyAmplitude(molecule, data):
+def getFrequencyAmplitude(molecule, data, **kwargs):
     """
     Obtains the highest amplitude frequency and value for the molecule.
     
     Parameters
     ----------
     molecule: str
-    data: NamedArray
+    data: NamedArray/Namedtimeseries
+    kwargs: dict
+        arguments passed to calculateFft
     
     Returns
     -------
@@ -91,13 +103,13 @@ def getFrequencyAmplitude(molecule, data):
     amplitude: float
     """
     # Return True if the expected frequency is among the topN frequencies with the largest amplitudes
-    frequencies, amplitudes = calculateFft(molecule, data=data)
+    frequencies, amplitudes = calculateFft(molecule, data=data, **kwargs)
     # Find the indices of the largest amplitudes
     sortedIndices = sorted(range(len(frequencies)), key=lambda i: amplitudes[i], reverse=True)
     topIdx = sortedIndices[0]
     return frequencies[topIdx], amplitudes[topIdx]
 
-def calculateFft(molecule, data, offset=100):
+def calculateFft(molecule, data, offset=TIME_OFFSET):
     """
     Calculate the FFT for a molecule in the simulation output.
     The calculation does not include amplitudes at a frequency of 0.
@@ -105,7 +117,7 @@ def calculateFft(molecule, data, offset=100):
     Parameters
     ----------
     molecule: str
-    data: NamedArray
+    data: NamedArray/Namedtimeseries
     offset: int
         Initial data that are not included in the FFT calculation
         
@@ -115,19 +127,24 @@ def calculateFft(molecule, data, offset=100):
         freqs, fftValues
     """
     # Returns frequencies and abs(fft) for a chemical species (molecule)
-    col = "[%s]" % molecule
+    if molecule in data.colnames:
+        col = molecule
+    else:
+        col = "[%s]" % molecule
     values = data[col]
     numPoint = len(data)
     count = numPoint - offset
-    endTime = data["time"][-1]
-    freqs = fftpack.fftfreq(count, endTime/numPoint)
+    endTime = data[TIME][-1]
+    startTime= data[TIME][0]
+    span = (endTime - startTime)/numPoint
+    freqs = fftpack.fftfreq(count, span)
     fftValues = np.abs(fftpack.fft(values[offset:]))
     # Eliminate frequency of 0
     freqs = freqs[1:]
     fftValues = fftValues[1:]
     return freqs, fftValues
 
-def runExperiment(parameterDct):
+def runExperiment(parameterDct, **kwargs):
     """
     Runs an experiment by changing parameters by the specified fractions and calculating responses.
     
@@ -136,6 +153,8 @@ def runExperiment(parameterDct):
     parameterDct: dict
        key: parameter name
        value: percent change the parameter
+    kwargs: dict
+       keyword arguments passed to runSimulation
        
     Returns
     -------
@@ -146,7 +165,7 @@ def runExperiment(parameterDct):
         index: molecule
         value: largest amplitude
     """
-    data = runSimulation(parameterDct)
+    data = runSimulation(parameterDct, **kwargs)
     frequencyDct = {}
     amplitudeDct = {}
     molecules = [s[1:-1] for s in data.colnames if s != TIME]
@@ -266,3 +285,4 @@ if __name__ == '__main__':
     assert(np.isclose(fDF.loc[percents[0], "Glucose"], -1*fDF.loc[percents[-1], "Glucose"]) )
     assert(aDF.loc[percents[-1], "Glucose"] < 0 )
     assert(aDF.loc[percents[0], "Glucose"] > 0 )
+    print ("OK!")
