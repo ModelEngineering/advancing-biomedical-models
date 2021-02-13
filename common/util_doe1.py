@@ -175,7 +175,7 @@ def runExperiment(parameterDct, **kwargs):
         amplitudeDct[molecule] = amplitude
     return pd.Series(frequencyDct), pd.Series(amplitudeDct)
 
-def runExperiments(parameter, percents, isRelative=True):
+def runExperiments(parameter, percents, isRelative=True, **kwargs):
     """
     Runs experiments for one parameter of the model at different percent changes in the parameter value (levels).
     
@@ -200,7 +200,7 @@ def runExperiments(parameter, percents, isRelative=True):
         values: depends on isRelative
     """
     # Calculate the baseline values
-    baseFrequencySer, baseAmplitudeSer = runExperiment({})
+    baseFrequencySer, baseAmplitudeSer = runExperiment({}, **kwargs)
     #
     def calcResponseSer(ser, isFrequency=True):
         """
@@ -250,7 +250,7 @@ def runExperiments(parameter, percents, isRelative=True):
         sers = []  # Collection of experiment results
         for percent in percents:
             parameterDct = {parameter: percent}
-            frequencySer, amplitudeSer = runExperiment(parameterDct)
+            frequencySer, amplitudeSer = runExperiment(parameterDct, **kwargs)
             if isFrequency:
                 ser = frequencySer
             else:
