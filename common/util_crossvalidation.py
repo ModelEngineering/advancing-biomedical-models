@@ -212,6 +212,9 @@ class AligningFitter(SimpleFitter):
         self.numPoint = numPoint
         if self.numPoint is None:
             self.numPoint = len(observedTS)
+        if self.endTime < observedTS.end:
+            msg = "The endTime should be no earlier than observedTS.end"
+            raise ValueError(msg)
     
     @staticmethod
     def selectCompatibleIndices(bigTimes, smallTimes):
@@ -368,8 +371,9 @@ if __name__ == '__main__':
         assert(np.abs(parameterValue - PARAMETER_DCT[parameterName]) < 0.1)
     # Tests for AligningFitter
     size = 50
-    observedSubTS = OBSERVED_TS[list(range(size))]
-    fitter = AligningFitter(MODEL, observedSubTS, PARAMETER_NAMES)
+    observedTS = OBSERVED_TS[list(range(size))]
+    fitter = AligningFitter(MODEL, observedTS, PARAMETER_NAMES,
+         endTime=OBSERVED_TS.end)
     fitter.fit()
     assert(len(fitter.observedTS) == size)
     assert(len(fitter.params.valuesdict()) == 3)
