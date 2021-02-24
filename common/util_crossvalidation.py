@@ -29,11 +29,13 @@ k3 = 0.3
 """
 
 
+MAX_NFEV = 1000
 NOISE_STD = 1.0
 END_TIME = 20
 NUM_POINT = 100
 LOWER = 0.01
-UPPER = 1
+UPPER = 10
+METHOD = "leastsq"
 # Model data
 PARAMETER_DCT = {
     "k1": 0.1,
@@ -114,7 +116,7 @@ OBSERVED_TS = makeSyntheticData()
 class SimpleFitter(object):
 
     def __init__(self, model, observedTS, parameterNames,
-                lower=LOWER, upper=UPPER, method="leastsq"):
+                lower=LOWER, upper=UPPER, method=METHOD):
         """
         model: str (Antimony Model)
         observedTS: NamedTimeseries
@@ -143,6 +145,7 @@ class SimpleFitter(object):
         self.params = None
         self.fittedTS = self.observedTS.copy()
         self.residualsTS = None
+        self.minimizerResult = None
         
     def mkParams(self):
         """
@@ -181,7 +184,8 @@ class SimpleFitter(object):
             newParams = params.copy()
         # Find the best parameters
         minimizer = lmfit.Minimizer(self.calcResiduals, newParams)
-        minimizerResult = minimizer.minimize(method=self.method, max_nfev=100)
+        minimizerResult = minimizer.minimize(method=self.method,
+            max_nfev=MAX_NFEV)
         # Record the results
         self.fittedTS = NamedTimeseries(array=self._fittedArr,
               colnames=self.allColumns)
@@ -189,6 +193,7 @@ class SimpleFitter(object):
         self.calcResiduals(self.params)  # Update the fitted and residuals
         self.residualsTS = self.observedTS.copy()        
         self.residualsTS[self.columns] = self._residualsArr
+        self.minimizerResult = minimizerResult
 
 
 class AligningFitter(SimpleFitter):
@@ -287,8 +292,9 @@ class CrossValidator():
         self.colnames = self.observedTS.colnames
         self.kwargs = kwargs
         self.trueParameterDct = trueParameterDct
-        self.parametersCol = []
-        self.rsqs = []
+        self.parametersCol = None
+        self.rsqs = None
+        self.fitters = None
 
     @staticmethod
     def _calcRsq(observedTS, fittedTS):
@@ -300,10 +306,15 @@ class CrossValidator():
     def execute(self):
         numPoint = len(self.observedTS)
         generator = foldGenerator(numPoint, self.numFold)
+        self.parametersCol = []
+        self.rsqs = []
+        self.fitters = []
         for trainIndices, testIndices in generator:
             fitter = AligningFitter(self.model, self.observedTS[trainIndices],
-                                  self.parameterNames, endTime=self.observedTS.end,
+                                  self.parameterNames,
+                                  endTime=self.observedTS.end,
                                   numPoint=numPoint, **self.kwargs)
+            self.fitters.append(fitter)
             fitter.fit()
             self.parametersCol.append(fitter.params.copy())
             rsq = self._calcRsq(self.observedTS[testIndices],
@@ -343,6 +354,37 @@ class CrossValidator():
     
 
 if __name__ == '__main__':
+    # Test for CrossValidator
+    # FIXME - add test or delete
+    model = """
+    S1 -> S2; k1*S1
+    S2 -> S3; k2*S2
+    S3 -> S4; k3*S3
+    
+    S1 = 10.00
+    k1 = 1.00
+    S2 = 0.00
+    k2 = 2.00
+    S3 = 0.00
+    S4 = 0.00
+    k3 = 3.00
+    """
+    numFold = 5
+    if False:
+        numParameter = 3
+        model = LinearModel(numParameter)
+        model.generateObserved(noiseStd=0.1)
+    else:
+        modelStr = model
+        rr = te.loada(model)
+        trueTS = NamedTimeseries(namedArray=rr.simulate(0, 5, 100))
+        observedTS = makeSyntheticData(trueTS, std=0.5)
+        parameterNames = ["k1", "k2", "k3"]
+        parameterDct = {p: n for n, p in enumerate(parameterNames)}
+    validator = CrossValidator(numFold, modelStr, observedTS, parameterNames,
+          trueParameterDct=parameterDct)
+    validator.execute()
+    
     # Tests for foldGenerator
     numFold = 10
     numPoint = 100
