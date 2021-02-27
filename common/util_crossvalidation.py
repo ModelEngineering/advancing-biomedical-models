@@ -262,7 +262,7 @@ class AligningFitter(SimpleFitter):
         return residualsArr
     
 
-class CrossValidator():
+class CrossValidator(object):
     """Performs cross validation using parameter fitting."""
     
     # Dataframe columns and dictionary keys
