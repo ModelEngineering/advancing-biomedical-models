@@ -1,6 +1,8 @@
 """General Utlities"""
 
 import codecs
+import matplotlib.image as mpimg
+import matplotlib.pyplot as plt
 import os
 import pandas as pd
 import string
@@ -114,22 +116,38 @@ def checkMassBalance(xmlFile):
     except Exception as err:
         print("***Error in file %s" % xmlFile)
 
+def showImage(pngPath):
+    """
+    Displays a png file.
+
+    Parameters
+    ----------
+    pngPath: str
+        Path to png file
+    """
+    image = mpimg.imread(pngPath)
+    plt.imshow(image)
+    plt.show()
+
    
 if __name__ == '__main__':
-    # calcNumberExperiment
+    #  calcNumberExperiment
     assert(calcNumberExperiment(5, 10, 1) == 51)
     assert(calcNumberExperiment(3,  2, 2) == 19)
-    # getModel
+    #  getModel
     for modelId in [52, 452]:
         modelStr, rr = getModel(modelId)
         assert(isinstance(modelStr, str))
         assert(isinstance(rr,
               te.roadrunner.extended_roadrunner.ExtendedRoadRunner))
-    # Test reportModelStatistics
+    #  reportModelStatistics
     size = 5
     df = reportModelStatistics(XML_FILES[0:size])
     assert(len(df) == size)
-    # Tests
+    #  checkMassBalance
     checkMassBalance(XML_FILES[0])
+    #  showImage
+    pngPath = os.path.join(MODEL_DIR, "model851.png")
+    showImage(pngPath)
     #
     print ("OK!")
