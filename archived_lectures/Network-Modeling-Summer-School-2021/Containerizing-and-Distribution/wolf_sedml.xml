@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created by phraSED-ML version v1.1.1 with libSBML version 5.19.1. -->
+<sedML xmlns="http://sed-ml.org/sed-ml/level1/version3" level="1" version="3">
+  <listOfModels>
+    <model id="wolf" language="urn:sedml:language:sbml.level-3.version-1" source="wolf_sbml.xml"/>
+  </listOfModels>
+  <listOfSimulations>
+    <uniformTimeCourse id="det_sim" initialTime="0" outputStartTime="0" outputEndTime="500" numberOfPoints="1000">
+      <algorithm kisaoID="KISAO:0000019"/>
+    </uniformTimeCourse>
+  </listOfSimulations>
+  <listOfTasks>
+    <task id="wolf_det_sim" modelReference="wolf" simulationReference="det_sim"/>
+  </listOfTasks>
+  <listOfDataGenerators>
+    <dataGenerator id="plot_0_0_0" name="time">
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+        <ci> time </ci>
+      </math>
+      <listOfVariables>
+        <variable id="time" symbol="urn:sedml:symbol:time" taskReference="wolf_det_sim" modelReference="wolf"/>
+      </listOfVariables>
+    </dataGenerator>
+    <dataGenerator id="plot_0_0_1" name="oxy">
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+        <ci> oxy </ci>
+      </math>
+      <listOfVariables>
+        <variable id="oxy" target="/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@id='oxy']" taskReference="wolf_det_sim" modelReference="wolf"/>
+      </listOfVariables>
+    </dataGenerator>
+  </listOfDataGenerators>
+  <listOfOutputs>
+    <plot2D id="plot_0" name="Wolf et al. dynamics (Model ID: BIOMD0000000090)">
+      <listOfCurves>
+        <curve id="plot_0__plot_0_0_0__plot_0_0_1" logX="false" xDataReference="plot_0_0_0" logY="false" yDataReference="plot_0_0_1"/>
+      </listOfCurves>
+    </plot2D>
+  </listOfOutputs>
+</sedML>
