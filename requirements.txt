@@ -7,4 +7,3 @@ lmfit
 SBstoat
 SBMLLint
 seaborn
-jedi==0.17.2
