@@ -7,3 +7,4 @@ lmfit
 SBstoat
 SBMLLint
 seaborn
+simplesbml
