@@ -40,7 +40,7 @@ def runSimulation(parameterDct, roadrunner=None, model=wm.WOLF_MODEL,
        
     Returns
     -------
-    namedArray: results of simulation
+    NamedArray: results of simulation
     """
     if roadrunner is None:
         roadrunner = te.loada(model)
