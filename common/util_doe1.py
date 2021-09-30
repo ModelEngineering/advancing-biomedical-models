@@ -1,5 +1,6 @@
 '''Helper Functions for Design of One Factor at a Time Experiments'''
 
+import common.constants as cn
 
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
@@ -9,7 +10,6 @@ from scipy import fftpack
 import tellurium as te
 import seaborn as sns
 import wolf_model as wm
-from SBstoat.namedTimeseries import NamedTimeseries, TIME
 
 
 ################## CONSTANTS #############################
@@ -22,6 +22,26 @@ TIME_OFFSET = 100
 
 
 ###################### FUNCTIONS #####################
+def arrToDF(arr, isSimulation=True):
+    """
+    Converts a NamedArray into a DataFrame.
+    If it is simulation output, makes TIME the index.
+
+    Parameters
+    ----------
+    arr: NamedArray
+    
+    Returns
+    -------
+    DataFrame
+        Removes "[" , "]" from the names of species
+    """
+    columns = [c[1:-1] if c[0] == "[" else c for c in arr.colnames]
+    df = pd.DataFrame(arr, columns=columns)
+    if isSimulation:
+        df = df.set_index(TIME)
+    return df
+
 def runSimulation(parameterDct, roadrunner=None, model=wm.WOLF_MODEL,
       startTime=wm.START, endTime=wm.END, numPoint=wm.NUMPT):
     """
@@ -51,65 +71,54 @@ def runSimulation(parameterDct, roadrunner=None, model=wm.WOLF_MODEL,
         roadrunner[parameter] = baseValue*(1 + 0.01*percent)
     # Run the simulation
     data = roadrunner.simulate(startTime, endTime, numPoint)
-    return data
+    return arrToDF(data)
 
-def calculateFft(molecule, data, offset=100):
+def plotOverTime(df, title="", figsize=(8, 4), isPlot=True):
     """
-    Calculate the FFT for a molecule in the simulation output.
-    The calculation does not include amplitudes at a frequency of 0.
-    
+    Plots a simulation dataframe
+
     Parameters
     ----------
-    molecule: str
-    data: NamedArray
-    offset: int
-        Initial data that are not included in the FFT calculation
-             
-    Returns
-    -------
-    list-float, list-float
-        freqs, fftValues
+    df: DataFrame (SimulationOutput format)
+    title: str
+    figsize: (float, float)
+        size of figure
+    isPlot: bool
+        Show the plot
     """
-    # Returns frequencies and abs(fft) for a chemical species (molecule)
-    if molecule in data.colnames:
-        col = molecule
-    else:
-        col = "[%s]" % molecule
-    values = data[col]
-    numPoint = len(data)
-    count = numPoint - offset
-    endTime = data["time"][-1]
-    freqs = fftpack.fftfreq(count, endTime/numPoint)
-    fftValues = np.abs(fftpack.fft(values[offset:]))
-    # Eliminate frequency of 0
-    freqs = freqs[1:]
-    fftValues = fftValues[1:]
-    return freqs, fftValues
+    fig, ax = plt.subplots(1, figsize=figsize)
+    arr = df.values
+    colnames = df.columns
+    p = ax.plot(df.index, arr)
+    _ = ax.legend(p, colnames[1:], bbox_to_anchor=(1.05, 1), loc='upper left')
+    _ = ax.set_title(title)
+    if isPlot:
+        plt.show()
 
-def getFrequencyAmplitude(molecule, data, **kwargs):
+def calcFFTPeak(molecule, df, **kwargs):
     """
     Obtains the highest amplitude frequency and value for the molecule.
     
     Parameters
     ----------
     molecule: str
-    data: NamedArray/Namedtimeseries
+    df: DataFrame
     kwargs: dict
-        arguments passed to calculateFft
+        arguments passed to calcFFT
     
     Returns
     -------
     frequency: float
     amplitude: float
     """
-    # Return True if the expected frequency is among the topN frequencies with the largest amplitudes
-    frequencies, amplitudes = calculateFft(molecule, data=data, **kwargs)
+    frequencies, amplitudes = calcFFT(molecule, df, **kwargs)
     # Find the indices of the largest amplitudes
-    sortedIndices = sorted(range(len(frequencies)), key=lambda i: amplitudes[i], reverse=True)
+    sortedIndices = sorted(range(len(frequencies)),
+          key=lambda i: amplitudes[i], reverse=True)
     topIdx = sortedIndices[0]
     return frequencies[topIdx], amplitudes[topIdx]
 
-def calculateFft(molecule, data, offset=TIME_OFFSET):
+def calcFFT(molecule, df, offset=TIME_OFFSET):
     """
     Calculate the FFT for a molecule in the simulation output.
     The calculation does not include amplitudes at a frequency of 0.
@@ -117,7 +126,7 @@ def calculateFft(molecule, data, offset=TIME_OFFSET):
     Parameters
     ----------
     molecule: str
-    data: NamedArray/Namedtimeseries
+    df: DataFrame
     offset: int
         Initial data that are not included in the FFT calculation
         
@@ -127,15 +136,15 @@ def calculateFft(molecule, data, offset=TIME_OFFSET):
         freqs, fftValues
     """
     # Returns frequencies and abs(fft) for a chemical species (molecule)
-    if molecule in data.colnames:
+    if molecule in df.columns:
         col = molecule
     else:
         col = "[%s]" % molecule
-    values = data[col]
-    numPoint = len(data)
+    values = df[col].values
+    numPoint = len(df)
     count = numPoint - offset
-    endTime = data[TIME][-1]
-    startTime= data[TIME][0]
+    endTime = max(df.index)
+    startTime= min(df.index)
     span = (endTime - startTime)/numPoint
     freqs = fftpack.fftfreq(count, span)
     fftValues = np.abs(fftpack.fft(values[offset:]))
@@ -144,9 +153,10 @@ def calculateFft(molecule, data, offset=TIME_OFFSET):
     fftValues = fftValues[1:]
     return freqs, fftValues
 
-def runExperiment(parameterDct, **kwargs):
+def runFFTExperiment(parameterDct, **kwargs):
     """
-    Runs an experiment by changing parameters by the specified fractions and calculating responses.
+    Runs an experiment by changing parameters by the specified
+    fractions and calculating FFT peak frequencies and amplitudes.
     
     Parameters
     ----------
@@ -165,124 +175,11 @@ def runExperiment(parameterDct, **kwargs):
         index: molecule
         value: largest amplitude
     """
-    data = runSimulation(parameterDct, **kwargs)
+    df = runSimulation(parameterDct, **kwargs)
     frequencyDct = {}
     amplitudeDct = {}
-    molecules = [s[1:-1] for s in data.colnames if s != TIME]
-    for molecule in molecules:
-        frequency, amplitude = getFrequencyAmplitude(molecule, data)
+    for molecule in df.columns:
+        frequency, amplitude = calcFFTPeak(molecule, df)
         frequencyDct[molecule] = frequency
         amplitudeDct[molecule] = amplitude
     return pd.Series(frequencyDct), pd.Series(amplitudeDct)
-
-def runExperiments(parameter, percents, isRelative=True, **kwargs):
-    """
-    Runs experiments for one parameter of the model at different percent changes in the parameter value (levels).
-    
-    Parameter
-    ---------
-    parameter: str
-    percents: list-float
-        percent change in parameter
-    isRelative: bool
-        True: values are percent changes relative to baseline
-        False: absolute value
-        
-    Returns
-    -------
-    frequencyDF: DataFrame
-        index: percent
-        columns: molecule
-        values: percent change in frequency w.r.t. baseline
-    amplitudeDF: DataFrame
-        index: percent
-        columns: molecule
-        values: depends on isRelative
-    """
-    # Calculate the baseline values
-    baseFrequencySer, baseAmplitudeSer = runExperiment({}, **kwargs)
-    #
-    def calcResponseSer(ser, isFrequency=True):
-        """
-        Calculates the relative response.
-        
-        Parameters
-        ----------
-        ser: pd.Series
-            index: molecule
-            value: absolute respoinse
-        isFrequency: bool
-            if True, frequency response; else, amplitude response
-            
-        Returns
-        -------
-        pd.Series
-        """
-        if not isRelative:
-            return ser
-        if isFrequency:
-            baseSer = baseFrequencySer
-        else:
-            baseSer = baseAmplitudeSer
-        resultSer = 100*(ser - baseSer)/baseSer
-        return resultSer
-    #
-    def calcLevelDF(isFrequency=None):
-        """
-        Calculates the dataframe of levels dataframe.
-        
-        Parameter
-        --------
-        isFrequency: bool
-            If True, frequency response. Otherwise, amplitude response
-            
-        Returns
-        -------
-        pd.DataFrame
-            index: tuple-int
-                levels of parameters
-            columns: str
-                molecule
-            values: response
-        """
-        if isFrequency is None:
-            raise ValueError("Must specify isFrequency!")
-        sers = []  # Collection of experiment results
-        for percent in percents:
-            parameterDct = {parameter: percent}
-            frequencySer, amplitudeSer = runExperiment(parameterDct, **kwargs)
-            if isFrequency:
-                ser = frequencySer
-            else:
-                ser = amplitudeSer
-            adjSer = calcResponseSer(ser, isFrequency=isFrequency)
-            sers.append(pd.DataFrame(adjSer).transpose())
-        resultDF = pd.concat(sers)
-        resultDF.index = percents
-        return resultDF
-    #
-    frequencyDF = calcLevelDF(isFrequency=True)
-    amplitudeDF = calcLevelDF(isFrequency=False)
-    return frequencyDF, amplitudeDF
-
-
-if __name__ == '__main__':
-    freqs, fftValues = calculateFft("Glucose", wm.WOLF_DATA)
-    assert(max(fftValues) > 90)  # Top frequency should have a large magnitude
-    #
-    frequency, amplitude = getFrequencyAmplitude("Glucose", wm.WOLF_DATA)
-    assert(frequency > 5.0)
-    assert(amplitude > 90)
-    #
-    freqs, fftValues = calculateFft("Glucose", wm.WOLF_DATA)
-    assert(max(fftValues) > 90)  # Top frequency should have a large magnitude
-    #
-    frequencySER, amplitudeSER = runExperiment({"J1_Ki": 0.03})
-    assert(len(frequencySER) == len(amplitudeSER))
-    #
-    percents = [-7, 0, 7]
-    fDF, aDF = runExperiments("J1_Ki", percents)
-    assert(np.isclose(fDF.loc[percents[0], "Glucose"], -1*fDF.loc[percents[-1], "Glucose"]) )
-    assert(aDF.loc[percents[-1], "Glucose"] < 0 )
-    assert(aDF.loc[percents[0], "Glucose"] > 0 )
-    print ("OK!")
