@@ -1,6 +1,6 @@
 '''Helper Functions for Design of One Factor at a Time Experiments'''
 
-import common.constants as cn
+import constants as cn
 
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
@@ -88,9 +88,8 @@ def plotOverTime(df, title="", figsize=(8, 4), isPlot=True):
     """
     fig, ax = plt.subplots(1, figsize=figsize)
     arr = df.values
-    colnames = df.columns
     p = ax.plot(df.index, arr)
-    _ = ax.legend(p, colnames[1:], bbox_to_anchor=(1.05, 1), loc='upper left')
+    _ = ax.legend(p, df.columns, bbox_to_anchor=(1.05, 1), loc='upper left')
     _ = ax.set_title(title)
     if isPlot:
         plt.show()

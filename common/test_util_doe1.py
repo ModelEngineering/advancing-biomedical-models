@@ -1,6 +1,6 @@
-from common import util_doe1 as doe1
-from common import wolf_model as wm
-import common.constants as cn
+import util_doe1 as doe1
+import wolf_model as wm
+import constants as cn
 
 import lmfit
 import pandas as pd
@@ -10,8 +10,8 @@ import matplotlib
 matplotlib.use('TkAgg')
 
 ############ CONSTANTS #############
-IGNORE_TEST = True
-IS_PLOT = True
+IGNORE_TEST = False
+IS_PLOT = False
 NROWS = 10
 NROWS_SUBSET = 5
 NCOLS = 3
@@ -67,7 +67,8 @@ class TestFunctions(unittest.TestCase):
         self.assertTrue(amplitude > 90)
         
     def testRunFFTExperiment(self):
-        # TESTING
+        if IGNORE_TEST:
+            return
         frequencySer, amplitudeSer = doe1.runFFTExperiment({})
         molecule = "Glucose"
         baseGlucoseFrequency, baseGlucoseAmplitude = doe1.calcFFTPeak(
