@@ -18,7 +18,7 @@ FONTSIZE = 16
 FREQIDX = 0  # Index of frequency values
 TIME = "time"
 SMALLEST_PCT = -100  # Smallest percent change in a parameter value
-TIME_OFFSET = 100
+TIME_OFFSET = 150
 
 
 ###################### FUNCTIONS #####################
@@ -135,10 +135,7 @@ def calcFFT(molecule, df, offset=TIME_OFFSET):
         freqs, fftValues
     """
     # Returns frequencies and abs(fft) for a chemical species (molecule)
-    if molecule in df.columns:
-        col = molecule
-    else:
-        col = "[%s]" % molecule
+    col = molecule
     values = df[col].values
     numPoint = len(df)
     count = numPoint - offset
@@ -148,9 +145,7 @@ def calcFFT(molecule, df, offset=TIME_OFFSET):
     freqs = fftpack.fftfreq(count, span)
     fftValues = np.abs(fftpack.fft(values[offset:]))
     # Eliminate frequency of 0
-    freqs = freqs[1:]
-    fftValues = fftValues[1:]
-    return freqs, fftValues
+    return freqs[1:], fftValues[1:]
 
 def runFFTExperiment(parameterDct, **kwargs):
     """

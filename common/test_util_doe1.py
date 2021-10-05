@@ -57,14 +57,15 @@ class TestFunctions(unittest.TestCase):
         if IGNORE_TEST:
             return
         freqs, fftValues = doe1.calcFFT("Glucose", self.df)
-        self.assertGreater(max(fftValues), 90)
+        self.assertGreater(max(fftValues), 80)
+        freq2s, fftValue2s = doe1.calcFFT("ATP", self.df)
         
     def testCalcFFTPeak(self):
         if IGNORE_TEST:
             return
         frequency, amplitude = doe1.calcFFTPeak("Glucose", self.df)
         self.assertTrue(frequency > 5.0)
-        self.assertTrue(amplitude > 90)
+        self.assertTrue(amplitude > 80)
         
     def testRunFFTExperiment(self):
         if IGNORE_TEST:
