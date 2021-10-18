@@ -1,0 +1,8 @@
+Topics for third DOE lecture
+
+1. Review key formulas: 0WD, 1WD, 2WD, 3WD
+2. Calculating parameters using the function runSimulations with two arguments.
+3. Visualization using heatmaps
+4. Asymmetric Designs
+   a. Motivation - focus on where there are high order interactions
+   b. How implement
